@@ -63,15 +63,15 @@ plugins/
 
 ## 安装和使用
 
-发布到 GitHub 之后，在 Claude Code 里：
+在 Claude Code 里：
 
 ```
-/plugin marketplace add <你的账号>/<仓库名>
+/plugin marketplace add frankz61/ai-kids-video
 /plugin install comfyui-h3-cloud@ai-kids-video
 /plugin install kids-video-studio@ai-kids-video
 ```
 
-发布前在本机试用：`/plugin marketplace add <这个目录的路径>`，再照上面安装。校验清单：`claude plugin validate .`
+从本地克隆的目录安装：`/plugin marketplace add <克隆目录的路径>`，再照上面安装。校验清单：`claude plugin validate .`
 
 然后：
 
@@ -103,8 +103,6 @@ plugins/
 ## 开源前的检查清单
 
 - [ ] 选定许可证并加 `LICENSE`（代码和文档可以分开授权），同时填好两个 `plugin.json` 里的 `license`。
-- [ ] 仓库地址确定后，在两个 `plugin.json` 里补 `repository`、`homepage`（作者名已填）。
-- [ ] 确定市场名（现在是 `ai-kids-video`）和插件名，发布后改名会影响已安装的用户。
 - [ ] 决定样例里的角色名、台词、提示词是否一并公开，或换成中性示例。
 - [ ] 核对各模型和服务的许可：MiniMax H3 社区许可的地区和商用限制、Qwen-Image、RelayVSR、RealESRGAN、ElevenLabs 的商用条款。
 - [ ] 在一台干净的机器上按 README 走一遍，补上依赖版本（`requirements.txt`）。

@@ -1,0 +1,4 @@
+{
+  "m_hello": {"role": "hero", "text": "[excited] Hello! I'm Fenlo!", "zh": "你好！我是芬洛！"},
+  "m_bye": {"role": "hero", "text": "[cheerfully] Bye-bye! See you next time!", "zh": "拜拜！下次见！"}
+}

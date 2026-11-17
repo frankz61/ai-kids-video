@@ -1,0 +1,19 @@
+# dependencies and caches
+node_modules/
+__pycache__/
+*.pyc
+
+# generated when a project made from project-template is run in place
+build/
+output/
+export/
+**/h3/frames/
+**/h3/clips/
+**/h3/clips_1080p/
+**/audio/tts/
+**/voice_cache/
+
+# secrets and local settings
+.env
+*.token
+.claude/settings.local.json

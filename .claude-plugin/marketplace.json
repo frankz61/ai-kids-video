@@ -1,0 +1,21 @@
+{
+  "name": "ai-kids-video",
+  "owner": {
+    "name": "frankz61"
+  },
+  "metadata": {
+    "description": "Skills for making AI-assisted kids' educational videos, and for renting the GPUs they need."
+  },
+  "plugins": [
+    {
+      "name": "comfyui-h3-cloud",
+      "source": "./plugins/comfyui-h3-cloud",
+      "description": "Deploy and call ComfyUI + MiniMax H3 on Google Colab or AutoDL."
+    },
+    {
+      "name": "kids-video-studio",
+      "source": "./plugins/kids-video-studio",
+      "description": "End-to-end production of a kids' English video series, with a project template."
+    }
+  ]
+}

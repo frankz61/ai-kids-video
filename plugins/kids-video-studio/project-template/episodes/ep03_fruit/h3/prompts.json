@@ -1,0 +1,24 @@
+{
+ "shots": [
+  {
+   "id": 1,
+   "image_prompt": "{HERO} stands in a sunny orchard garden with green grass and fruit trees in soft focus behind him, full body, centered, nose lifted, sniffing the air with eyes half closed and a curious, delighted smile. {STYLE}",
+   "prompt_en": "The little orange fox cub lifts his nose and sniffs the air curiously, then opens his eyes wide with a delighted smile, ears perking up, tail wagging. Static camera. Soft breeze and birdsong, no speech, no music."
+  },
+  {
+   "id": 3,
+   "image_prompt": "{HERO} stands in a sunny orchard garden, jumping for joy with both arms raised and a huge excited smile. Full body, centered. {STYLE}",
+   "prompt_en": "The little orange fox cub jumps up and down happily on the spot with arms raised, laughing, tail swishing. Static camera. Light cheerful orchard ambience, no speech, no music."
+  },
+  {
+   "id": 4,
+   "image_prompt": "{HERO} stands in a sunny orchard garden holding one wooden paintbrush with a softly glowing golden tip raised high above his head, mid-jump with both feet off the ground, huge excited smile. Full body, centered. {STYLE}",
+   "prompt_en": "The little orange fox cub jumps up and down happily on the spot with the glowing paintbrush raised high, laughing, tail swishing. Static camera. Light cheerful ambience, no speech, no music."
+  },
+  {
+   "id": 5,
+   "image_prompt": "{HERO} dances happily with arms out in a sunny orchard garden with fruit trees in soft focus behind him, huge joyful smile. Full body, centered. {STYLE}",
+   "prompt_en": "The little orange fox cub spins around in a happy dance with arms out, tail swirling, laughing. Static camera. Cheerful birdsong and light breeze, no speech, no music."
+  }
+ ]
+}

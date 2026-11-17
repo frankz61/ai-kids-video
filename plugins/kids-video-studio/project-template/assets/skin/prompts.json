@@ -1,0 +1,618 @@
+{
+ "items": {
+  "apple": {
+   "prompt": "One single big round shiny bright red apple with a short brown stem and one small green leaf",
+   "seed": 3101
+  },
+  "banana": {
+   "prompt": "One single plain bright yellow banana fruit with a smooth clean peel, gently curved, unpeeled",
+   "seed": 3102
+  },
+  "pear": {
+   "prompt": "One single plump bright green pear with a short brown stem",
+   "seed": 3103
+  },
+  "strawberry": {
+   "prompt": "One single big plump bright red strawberry with tiny yellow seeds and a green leafy top",
+   "seed": 3104
+  },
+  "duck": {
+   "prompt": "One bright yellow baby duck with an orange beak, standing, side view facing right",
+   "style": "animal",
+   "seed": 3201
+  },
+  "bird": {
+   "prompt": "One bright blue little round bird with an orange beak, side view facing right, wings folded",
+   "style": "animal",
+   "key": "green",
+   "seed": 4202
+  },
+  "frog": {
+   "prompt": "One bright green little frog sitting, front view, smiling",
+   "style": "animal",
+   "seed": 3203
+  },
+  "cat": {
+   "prompt": "One gray kitten sitting, front view, smiling",
+   "style": "animal",
+   "seed": 3204
+  },
+  "dog": {
+   "prompt": "One brown puppy dog with floppy ears sitting, front view, tongue out, smiling",
+   "style": "animal",
+   "seed": 3205
+  },
+  "rabbit": {
+   "prompt": "One white baby rabbit with long upright ears with pink insides, sitting, front view, smiling",
+   "style": "animal",
+   "seed": 3206,
+   "keySat": 0.5
+  },
+  "fish": {
+   "prompt": "One bright blue little round fish with a light blue belly, side view facing left, smiling",
+   "style": "animal",
+   "key": "green",
+   "seed": 3207,
+   "noShadow": true
+  },
+  "balloon_red": {
+   "prompt": "One single shiny bright red round party balloon with a short thin string hanging down",
+   "box": [
+    20,
+    4,
+    180,
+    198
+   ],
+   "seed": 3301
+  },
+  "balloon_blue": {
+   "prompt": "One single shiny bright blue round party balloon with a short thin string hanging down",
+   "key": "green",
+   "box": [
+    20,
+    4,
+    180,
+    198
+   ],
+   "seed": 3301
+  },
+  "balloon_yellow": {
+   "prompt": "One single shiny bright yellow round party balloon with a short thin string hanging down",
+   "box": [
+    20,
+    4,
+    180,
+    198
+   ],
+   "seed": 3301
+  },
+  "balloon_green": {
+   "prompt": "One single shiny bright green round party balloon with a short thin string hanging down",
+   "box": [
+    20,
+    4,
+    180,
+    198
+   ],
+   "seed": 3301
+  },
+  "ball": {
+   "prompt": "One single shiny bright red rubber toy ball with one wide yellow stripe around it",
+   "seed": 3401
+  },
+  "car": {
+   "prompt": "One cute small bright blue toy car with black wheels, side view facing right",
+   "key": "green",
+   "seed": 3402
+  },
+  "blocks": {
+   "prompt": "A messy pile of four fallen wooden toy cubes lying on their sides: one red, one yellow, one green and one orange",
+   "seed": 3403,
+   "box": [
+    10,
+    60,
+    190,
+    192
+   ]
+  },
+  "tower": {
+   "prompt": "A neat tall tower of four wooden toy cubes stacked straight on top of each other: red at the bottom, then yellow, then green, and orange on top",
+   "seed": 3404,
+   "box": [
+    40,
+    8,
+    160,
+    194
+   ]
+  },
+  "finish": {
+   "prompt": "One black and white checkered racing finish flag on a short wooden pole, flag fully open",
+   "seed": 3405
+  },
+  "hands": {
+   "prompt": "A pair of cartoon hands wearing puffy white gloves, clapping, the two palms pressed together, fingers pointing up",
+   "seed": 4406,
+   "key": "green"
+  },
+  "milk": {
+   "prompt": "One clear drinking glass full of white milk",
+   "seed": 3501,
+   "box": [
+    40,
+    14,
+    160,
+    190
+   ],
+   "keySat": 0.6
+  },
+  "bread": {
+   "prompt": "One loaf of golden brown bread with two slices cut at the front",
+   "seed": 3502
+  },
+  "eggs": {
+   "prompt": "Exactly two small whole chicken eggs with smooth pale cream shells, standing upright next to each other, both fully visible",
+   "seed": 4503,
+   "box": [
+    14,
+    40,
+    186,
+    180
+   ]
+  },
+  "juice": {
+   "prompt": "One clear drinking glass full of bright orange juice with a red straw and a slice of orange on the rim",
+   "seed": 3504,
+   "box": [
+    36,
+    8,
+    164,
+    190
+   ]
+  },
+  "fenlo": {
+   "prompt": "The head of a cute chubby baby fox cub with bright orange fur, a white muzzle, big round brown eyes, a small black nose and pointy ears, wearing a cream-white knitted scarf, gentle closed-mouth smile",
+   "seed": 3601,
+   "style": "face",
+   "box": [
+    8,
+    8,
+    192,
+    196
+   ]
+  },
+  "happy": {
+   "prompt": "The head of a cute chubby baby fox cub with bright orange fur, a white muzzle, big round brown eyes, a small black nose and pointy ears, wearing a cream-white knitted scarf, very happy, huge joyful wide open laughing smile",
+   "seed": 3602,
+   "style": "face",
+   "box": [
+    8,
+    8,
+    192,
+    196
+   ]
+  },
+  "sad": {
+   "prompt": "The head of a cute chubby baby fox cub with bright orange fur, a white muzzle, big round brown eyes, a small black nose and pointy ears, wearing a cream-white knitted scarf, very sad face, mouth turned down in a small frown, big watery eyes, eyebrows raised in the middle, upright pointy orange fox ears",
+   "seed": 4603,
+   "style": "face",
+   "box": [
+    8,
+    8,
+    192,
+    196
+   ]
+  },
+  "hungry": {
+   "prompt": "The head of a cute chubby baby fox cub with bright orange fur, a white muzzle, big round brown eyes, a small black nose and pointy ears, wearing a cream-white knitted scarf, hungry, licking his lips with a little pink tongue sticking out, eyes looking up dreamily",
+   "seed": 3604,
+   "style": "face",
+   "box": [
+    8,
+    8,
+    192,
+    196
+   ]
+  },
+  "sleepy": {
+   "prompt": "The head of a cute chubby baby fox cub with bright orange fur, a white muzzle, a small black nose and pointy ears, wearing a cream-white knitted scarf, fast asleep, both eyes shut tight as two curved lines, small peaceful closed smile, head tilted slightly",
+   "seed": 4605,
+   "style": "face",
+   "box": [
+    8,
+    8,
+    192,
+    196
+   ]
+  },
+  "fenlo_framed": {
+   "prompt": "A portrait photo in a simple light wooden picture frame with rounded corners, seen straight from the front. In the photo: the smiling face of a baby fox cub wearing a cream-white knitted scarf, orange fur, white muzzle, plain cream background inside the frame",
+   "style": "raw",
+   "box": [
+    6,
+    6,
+    194,
+    194
+   ],
+   "seed": 3701
+  },
+  "mom": {
+   "prompt": "A portrait photo in a simple light wooden picture frame with rounded corners, seen straight from the front. In the photo: the smiling face of a kind adult mother fox with long eyelashes wearing a pink bow on her head, orange fur, white muzzle, plain cream background inside the frame",
+   "style": "raw",
+   "box": [
+    6,
+    6,
+    194,
+    194
+   ],
+   "seed": 3702
+  },
+  "dad": {
+   "prompt": "A portrait photo in a simple light wooden picture frame with rounded corners, seen straight from the front. In the photo: the smiling face of a friendly adult father fox with round brown eyes and a gentle smile, wearing a small blue bow tie, orange fur, white muzzle, plain cream background inside the frame",
+   "style": "raw",
+   "box": [
+    6,
+    6,
+    194,
+    194
+   ],
+   "seed": 4703
+  },
+  "grandma": {
+   "prompt": "A portrait photo in a simple light wooden picture frame with rounded corners, seen straight from the front. In the photo: the smiling face of an old grandmother fox with light gray-orange fur, round glasses and a gray hair bun, orange fur, white muzzle, plain cream background inside the frame",
+   "style": "raw",
+   "box": [
+    6,
+    6,
+    194,
+    194
+   ],
+   "seed": 3704
+  },
+  "grandpa": {
+   "prompt": "A portrait photo in a simple light wooden picture frame with rounded corners, seen straight from the front. In the photo: the smiling face of an old grandfather fox with light gray-orange fur, round glasses and a big white mustache, orange fur, white muzzle, plain cream background inside the frame",
+   "style": "raw",
+   "box": [
+    6,
+    6,
+    194,
+    194
+   ],
+   "seed": 3705
+  },
+  "head": {
+   "from": "fenlo",
+   "glow": [
+    94,
+    58,
+    72,
+    46
+   ],
+   "focus": [
+    94,
+    30
+   ]
+  },
+  "eyes": {
+   "from": "fenlo",
+   "glow": [
+    94,
+    89,
+    46,
+    19
+   ],
+   "focus": [
+    118,
+    89
+   ]
+  },
+  "nose": {
+   "from": "fenlo",
+   "glow": [
+    90,
+    109,
+    15,
+    13
+   ],
+   "focus": [
+    90,
+    109
+   ]
+  },
+  "mouth": {
+   "from": "fenlo",
+   "glow": [
+    90,
+    128,
+    19,
+    10
+   ],
+   "focus": [
+    90,
+    128
+   ]
+  },
+  "fenlo_nonose": {
+   "from": "fenlo",
+   "erase": [
+    90,
+    109,
+    9,
+    7
+   ],
+   "glow": [
+    90,
+    109,
+    15,
+    13
+   ],
+   "focus": [
+    90,
+    109
+   ]
+  },
+  "rabbit_jump": {
+   "prompt": "One white baby rabbit with long ears with pink insides jumping high in the air, side view facing right, body stretched out in a big leap, front paws reaching forward, back legs kicked out behind, ears flying back, happy face",
+   "style": "animal",
+   "seed": 5206,
+   "keySat": 0.5
+  },
+  "dog_run": {
+   "prompt": "One brown puppy dog with floppy ears running very fast, side view facing right, front legs stretched far forward and back legs stretched far back in a full gallop, ears and tongue flapping in the wind, happy face",
+   "style": "animal",
+   "seed": 5205,
+   "box": [
+    4,
+    30,
+    196,
+    180
+   ]
+  },
+  "icecream": {
+   "prompt": "One ice cream cone with one big round pink strawberry ice cream scoop on a golden waffle cone, upright",
+   "seed": 5301,
+   "box": [
+    30,
+    8,
+    170,
+    192
+   ]
+  },
+  "icecream_drop": {
+   "prompt": "One ice cream cone that fell upside down onto the floor: a squashed pink strawberry ice cream scoop splattered in a small melting pink puddle, with the golden waffle cone sticking up on top of it, tilted",
+   "seed": 5302,
+   "box": [
+    10,
+    50,
+    190,
+    192
+   ],
+   "noShadow": true
+  },
+  "rabbit_hop": {
+   "video": {
+    "from": "rabbit",
+    "prompt": "The little white rabbit jumps straight up high into the air and lands back on the same spot, two big bouncy jumps, ears flopping. It stays in the centre and does not travel.",
+    "seed": 7111,
+    "key": "blue",
+    "keySat": 0.5,
+    "place": [
+     0.5,
+     0.93,
+     0.4
+    ],
+    "frames": 56,
+    "zoom": 1.7,
+    "step": 1,
+    "fps": 16,
+    "cell": 280
+   },
+   "anim": {
+    "sheet": "rabbit_hop_anim.png",
+    "cols": 8,
+    "rows": 7,
+    "n": 55,
+    "fps": 16,
+    "zoom": 1.7
+   },
+   "box": [
+    0,
+    0,
+    200,
+    200
+   ]
+  },
+  "dog_gallop": {
+   "video": {
+    "from": "dog_run",
+    "prompt": "The little brown puppy gallops on the spot like on a treadmill, staying in the centre: its legs run quickly back and forth in a steady running cycle, ears and tail flapping. It does not travel.",
+    "seed": 7112,
+    "key": "blue",
+    "place": [
+     0.5,
+     0.72,
+     0.42
+    ],
+    "frames": 39,
+    "zoom": 1.15,
+    "step": 1,
+    "fps": 16,
+    "cell": 280
+   },
+   "anim": {
+    "sheet": "dog_gallop_anim.png",
+    "cols": 7,
+    "rows": 6,
+    "n": 38,
+    "fps": 16,
+    "zoom": 1.15
+   },
+   "box": [
+    0,
+    0,
+    200,
+    200
+   ]
+  },
+  "hands_clap": {
+   "anim": {
+    "sheet": "hands_clap_anim.png",
+    "cols": 5,
+    "rows": 4,
+    "n": 20,
+    "fps": 12,
+    "zoom": 1.9
+   },
+   "box": [
+    0,
+    0,
+    200,
+    200
+   ],
+   "clap": {
+    "prompt": "Two cartoon hands wearing puffy white gloves about to clap, seen from the side: the left hand on the left and the right hand on the right, held upright with a wide clear empty gap between them, the two open palms facing each other, fingers together and pointing up, thumbs toward the viewer, symmetrical mirror images of each other, the hands do not touch",
+    "seed": 8131,
+    "key": "green",
+    "frames": 20,
+    "fps": 12,
+    "zoom": 1.9
+   }
+  },
+  "fish_swim": {
+   "video": {
+    "from": "fish",
+    "prompt": "The little blue fish swims on the spot, staying in the centre: its tail fin wags from side to side and its body wiggles in a steady swimming motion, small fins flapping.",
+    "seed": 7122,
+    "key": "green",
+    "place": [
+     0.5,
+     0.72,
+     0.45
+    ],
+    "frames": 39,
+    "zoom": 1.25,
+    "step": 1,
+    "fps": 14,
+    "cell": 280
+   },
+   "noShadow": true,
+   "anim": {
+    "sheet": "fish_swim_anim.png",
+    "cols": 7,
+    "rows": 6,
+    "n": 38,
+    "fps": 14,
+    "zoom": 1.25
+   },
+   "box": [
+    0,
+    0,
+    200,
+    200
+   ]
+  },
+  "bear_ready": {
+   "prompt": "One cute chubby baby teddy bear cub with soft light brown fur and a cream muzzle, sitting upright, front view, both front paws raised in front of its chest and held apart with a gap between them, paw pads facing each other, about to clap, big happy open smile",
+   "style": "animal",
+   "seed": 9101
+  },
+  "bear_clap": {
+   "video": {
+    "from": "bear_ready",
+    "prompt": "The cute teddy bear cub claps its two front paws together happily: it opens its arms wide apart, then claps the paws together in front of its chest, opens them wide again and claps again, three slow big claps, smiling. Both paws are always visible. It stays sitting in the centre.",
+    "seed": 9111,
+    "key": "blue",
+    "place": [
+     0.5,
+     0.9,
+     0.62
+    ],
+    "frames": 56,
+    "step": 1,
+    "fps": 16,
+    "cell": 280,
+    "zoom": 1.25
+   },
+   "anim": {
+    "sheet": "bear_clap_anim.png",
+    "cols": 8,
+    "rows": 7,
+    "n": 55,
+    "fps": 16,
+    "zoom": 1.25
+   },
+   "box": [
+    0,
+    0,
+    200,
+    200
+   ]
+  }
+ },
+ "covers": {
+  "basket": {
+   "prompt": "One empty round bowl-shaped woven wicker basket, no handle, no lid, wide open top, light brown, seen straight from the front at eye level",
+   "seed": 3105,
+   "box": [
+    8,
+    62,
+    192,
+    190
+   ],
+   "front": {
+    "cx": 100,
+    "cy": 82,
+    "rx": 91,
+    "ry": 19
+   }
+  },
+  "bush": {
+   "prompt": "One round fluffy bright green garden bush, dense leaves, wider than tall",
+   "seed": 3801,
+   "box": [
+    4,
+    50,
+    196,
+    192
+   ]
+  }
+ },
+ "brush": {
+  "prompt": "One round artist's paintbrush with a slim wooden handle, a silver metal band and a pointed golden yellow bristle tip, pointing diagonally to the upper right",
+  "seed": 5116,
+  "box": [
+   20,
+   20,
+   200,
+   200
+  ],
+  "key": "green",
+  "rot180": true,
+  "matte": "diff"
+ },
+ "bg": {
+  "orchard": {
+   "prompt": "A sunny orchard garden, a wide empty green grass lawn filling the lower half, apple trees and flowers far away in the distance, pale blue sky, large calm empty space in the middle",
+   "seed": 3107,
+   "blur": 6,
+   "ground": 548
+  },
+  "outdoor": {
+   "prompt": "A sunny garden, a wide empty green grass lawn filling the lower half, flower beds, round bushes and a low wooden fence far away in the distance, pale blue sky with a few small clouds, large calm empty space in the middle",
+   "seed": 3901,
+   "blur": 6,
+   "ground": 548
+  },
+  "indoor": {
+   "prompt": "A cozy bright children's living room, plain cream wall, a window with soft daylight at the far right, a wide empty light wooden floor filling the lower third, a small sofa far to the left, large calm empty wall space in the middle",
+   "seed": 3902,
+   "blur": 5,
+   "ground": 560
+  },
+  "party": {
+   "prompt": "A cozy bright children's living room decorated for a birthday party, plain cream wall, colorful bunting flags hanging along the top, a few balloons in the far top corners, a wide empty light wooden floor filling the lower third, large calm empty wall space in the middle",
+   "seed": 3903,
+   "blur": 5,
+   "ground": 575
+  }
+ }
+}

@@ -1,0 +1,468 @@
+{
+ "id": "ep03_fruit",
+ "output_name": "ep03_fenlos_fruit_basket",
+ "title_en": "What's in the Basket?",
+ "title_zh": "认识水果",
+ "bg": "outdoor",
+ "lines": {
+  "n_yummy_smell": {
+   "role": "narrator",
+   "text": "[curious] Mmm! Yummy!",
+   "zh": "嗯！好香呀！"
+  },
+  "m_brush": {
+   "role": "hero",
+   "text": "[excited] My magic paintbrush!",
+   "zh": "我的魔法画笔！"
+  },
+  "n_hiding": {
+   "role": "narrator",
+   "text": "[playfully] Shh! Look!",
+   "zh": "嘘！看！"
+  },
+  "n_what": {
+   "role": "narrator",
+   "text": "[curious] What is it?",
+   "zh": "这是什么？"
+  },
+  "n_its_apple": {
+   "role": "narrator",
+   "text": "[excited] It's an apple!",
+   "zh": "是一个苹果！"
+  },
+  "n_apple_1": {
+   "role": "narrator",
+   "text": "[cheerfully] Apple!",
+   "zh": "苹果！"
+  },
+  "n_red_apple": {
+   "role": "narrator",
+   "text": "[happily] A red apple!",
+   "zh": "一个红苹果！"
+  },
+  "n_its_banana": {
+   "role": "narrator",
+   "text": "[excited] It's a banana!",
+   "zh": "是一根香蕉！"
+  },
+  "n_banana_1": {
+   "role": "narrator",
+   "text": "[cheerfully] Banana!",
+   "zh": "香蕉！"
+  },
+  "n_yellow_banana": {
+   "role": "narrator",
+   "text": "[happily] A yellow banana!",
+   "zh": "一根黄香蕉！"
+  },
+  "n_its_pear": {
+   "role": "narrator",
+   "text": "[excited] It's a pear!",
+   "zh": "是一个梨！"
+  },
+  "n_pear_1": {
+   "role": "narrator",
+   "text": "[cheerfully] Pear!",
+   "zh": "梨！"
+  },
+  "n_green_pear": {
+   "role": "narrator",
+   "text": "[happily] A green pear!",
+   "zh": "一个绿色的梨！"
+  },
+  "n_its_strawberry": {
+   "role": "narrator",
+   "text": "[excited] It's a strawberry!",
+   "zh": "是一颗草莓！"
+  },
+  "n_strawberry_1": {
+   "role": "narrator",
+   "text": "[cheerfully] Strawberry!",
+   "zh": "草莓！"
+  },
+  "n_one_strawberry": {
+   "role": "narrator",
+   "text": "[happily] One strawberry!",
+   "zh": "一颗草莓！"
+  },
+  "n_point_banana": {
+   "role": "narrator",
+   "text": "[encouraging] Point to the banana!",
+   "zh": "指一指香蕉！"
+  },
+  "n_that_banana": {
+   "role": "narrator",
+   "text": "[calmly] That's the banana!",
+   "zh": "那是香蕉！"
+  },
+  "n_point_pear": {
+   "role": "narrator",
+   "text": "[encouraging] Point to the pear!",
+   "zh": "指一指梨！"
+  },
+  "n_that_pear": {
+   "role": "narrator",
+   "text": "[calmly] That's the pear!",
+   "zh": "那是梨！"
+  },
+  "m_wow": {
+   "role": "hero",
+   "text": "[amazed] Wow!",
+   "zh": "哇！"
+  },
+  "n_point_apple": {
+   "role": "narrator",
+   "text": "[encouraging] Point to the apple!",
+   "zh": "指一指苹果！"
+  },
+  "n_that_apple": {
+   "role": "narrator",
+   "text": "[calmly] That's the apple!",
+   "zh": "那是苹果！"
+  },
+  "n_point_strawberry": {
+   "role": "narrator",
+   "text": "[encouraging] Point to the strawberry!",
+   "zh": "指一指草莓！"
+  },
+  "n_that_strawberry": {
+   "role": "narrator",
+   "text": "[calmly] That's the strawberry!",
+   "zh": "那是草莓！"
+  },
+  "n_all_fruit": {
+   "role": "narrator",
+   "text": "[excited] Apple, banana, pear, strawberry!",
+   "zh": "苹果、香蕉、梨、草莓！"
+  },
+  "n_chant_apple": {
+   "role": "narrator",
+   "text": "[rhythmic, cheerful] Apple, apple, red apple!",
+   "zh": "苹果，苹果，红苹果！"
+  },
+  "n_chant_banana": {
+   "role": "narrator",
+   "text": "[rhythmic, cheerful] Banana, banana, yellow banana!",
+   "zh": "香蕉，香蕉，黄香蕉！"
+  },
+  "n_chant_pear": {
+   "role": "narrator",
+   "text": "[rhythmic, cheerful] Pear, pear, green pear!",
+   "zh": "梨，梨，绿色的梨！"
+  },
+  "n_chant_strawberry": {
+   "role": "narrator",
+   "text": "[rhythmic, cheerful] Strawberry, strawberry, red strawberry!",
+   "zh": "草莓，草莓，红草莓！"
+  },
+  "m_apple_banana": {
+   "role": "hero",
+   "text": "[excited] An apple! A banana!",
+   "zh": "一个苹果！一根香蕉！"
+  },
+  "n_two_more": {
+   "role": "narrator",
+   "text": "[curious] Two more!",
+   "zh": "还有两个！"
+  }
+ },
+ "segments": [
+  {
+   "id": "intro",
+   "type": "intro"
+  },
+  {
+   "id": "ritual",
+   "type": "ritual",
+   "say": "m_brush"
+  },
+  {
+   "id": "apple",
+   "type": "teach",
+   "item": "apple",
+   "reveal": "peek",
+   "cover": "basket",
+   "beats": [
+    {
+     "say": "n_hiding",
+     "after": 0.8
+    },
+    {
+     "say": "n_what",
+     "q": true,
+     "after": 2.0
+    },
+    {
+     "say": "n_its_apple",
+     "word": true
+    },
+    {
+     "say": "n_apple_1",
+     "pulse": true
+    },
+    {
+     "say": "n_red_apple",
+     "pulse": true,
+     "after": 1.2
+    }
+   ]
+  },
+  {
+   "id": "banana",
+   "type": "teach",
+   "item": "banana",
+   "reveal": "peek",
+   "cover": "basket",
+   "beats": [
+    {
+     "say": "n_what",
+     "q": true,
+     "after": 2.0
+    },
+    {
+     "say": "n_its_banana",
+     "word": true
+    },
+    {
+     "say": "n_banana_1",
+     "pulse": true
+    },
+    {
+     "say": "n_yellow_banana",
+     "pulse": true,
+     "after": 1.2
+    }
+   ]
+  },
+  {
+   "id": "pear",
+   "type": "teach",
+   "item": "pear",
+   "reveal": "peek",
+   "cover": "basket",
+   "beats": [
+    {
+     "say": "n_what",
+     "q": true,
+     "after": 2.0
+    },
+    {
+     "say": "n_its_pear",
+     "word": true
+    },
+    {
+     "say": "n_pear_1",
+     "pulse": true
+    },
+    {
+     "say": "n_green_pear",
+     "pulse": true,
+     "after": 1.2
+    }
+   ]
+  },
+  {
+   "id": "strawberry",
+   "type": "teach",
+   "item": "strawberry",
+   "reveal": "peek",
+   "cover": "basket",
+   "beats": [
+    {
+     "say": "n_what",
+     "q": true,
+     "after": 2.0
+    },
+    {
+     "say": "n_its_strawberry",
+     "word": true
+    },
+    {
+     "say": "n_strawberry_1",
+     "pulse": true
+    },
+    {
+     "say": "n_one_strawberry",
+     "pulse": true,
+     "after": 1.2
+    }
+   ]
+  },
+  {
+   "id": "quiz1",
+   "type": "quiz",
+   "items": [
+    "banana",
+    "apple",
+    "strawberry",
+    "pear"
+   ],
+   "rounds": [
+    {
+     "target": "banana",
+     "ask": "n_point_banana",
+     "answer": "n_that_banana",
+     "demo": true,
+     "wait": 4.0
+    },
+    {
+     "target": "pear",
+     "ask": "n_point_pear",
+     "answer": "n_that_pear"
+    }
+   ]
+  },
+  {
+   "id": "quiz2",
+   "type": "quiz",
+   "items": [
+    "pear",
+    "strawberry",
+    "banana",
+    "apple"
+   ],
+   "rounds": [
+    {
+     "target": "apple",
+     "ask": "n_point_apple",
+     "answer": "n_that_apple"
+    },
+    {
+     "target": "strawberry",
+     "ask": "n_point_strawberry",
+     "answer": "n_that_strawberry"
+    }
+   ]
+  },
+  {
+   "id": "chant",
+   "type": "chant",
+   "items": [
+    "apple",
+    "banana",
+    "pear",
+    "strawberry"
+   ],
+   "repeat": 2,
+   "lines": [
+    {
+     "say": "n_chant_apple",
+     "item": "apple"
+    },
+    {
+     "say": "n_chant_banana",
+     "item": "banana"
+    },
+    {
+     "say": "n_chant_pear",
+     "item": "pear"
+    },
+    {
+     "say": "n_chant_strawberry",
+     "item": "strawberry"
+    }
+   ]
+  },
+  {
+   "id": "outro",
+   "type": "outro",
+   "items": [
+    "apple",
+    "banana",
+    "pear",
+    "strawberry"
+   ]
+  }
+ ],
+ "order": [
+  [
+   "h5",
+   "intro"
+  ],
+  [
+   "h3",
+   1,
+   [
+    [
+     "n_yummy_smell",
+     0.6
+    ]
+   ]
+  ],
+  [
+   "h5",
+   "ritual"
+  ],
+  [
+   "h5",
+   "apple"
+  ],
+  [
+   "h5",
+   "banana"
+  ],
+  [
+   "h3",
+   3,
+   [
+    [
+     "m_apple_banana",
+     0.6
+    ],
+    [
+     "n_two_more",
+     3.2
+    ]
+   ]
+  ],
+  [
+   "h5",
+   "pear"
+  ],
+  [
+   "h5",
+   "strawberry"
+  ],
+  [
+   "h5",
+   "quiz1"
+  ],
+  [
+   "h3",
+   4,
+   [
+    [
+     "m_wow",
+     1.6
+    ]
+   ]
+  ],
+  [
+   "h5",
+   "quiz2"
+  ],
+  [
+   "h3",
+   5,
+   [
+    [
+     "n_all_fruit",
+     0.6
+    ]
+   ]
+  ],
+  [
+   "h5",
+   "chant"
+  ],
+  [
+   "h5",
+   "outro"
+  ]
+ ],
+ "skin": {
+  "bg": {
+   "outdoor": "orchard"
+  }
+ }
+}

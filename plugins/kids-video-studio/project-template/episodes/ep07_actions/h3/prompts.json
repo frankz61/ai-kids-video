@@ -1,0 +1,23 @@
+{
+ "shots": [
+  {
+   "id": 1,
+   "image_prompt": "{HERO} stands in a sunny park with green grass and trees, full body, centered, both paws on his hips, standing tall with a confident, ready-to-go smile. {STYLE}",
+   "prompt_en": "The little orange fox cub stretches his arms up high, then puts his paws on his hips with a confident smile, tail swishing. Static camera. Light park ambience with birdsong, no speech, no music."
+  },
+  {
+   "id": 3,
+   "image_prompt": "{HERO} stands in a sunny park with green grass, mid-jump in a small happy hop on the spot with both feet just off the ground, arms up, big proud smile. Full body, centered. {STYLE}",
+   "prompt_en": "The little orange fox cub does small happy hops on the spot, arms up, laughing proudly, tail bouncing. Static camera. Light park ambience, no speech, no music."
+  },
+  {
+   "id": 4,
+   "reuse": "../ep02_numbers/h3/clips_1080p/shot_04.mp4"
+  },
+  {
+   "id": 5,
+   "image_prompt": "{HERO} stands in a sunny park with green grass, clapping his paws together happily with a huge proud smile, eyes closed with joy. Full body, centered. {STYLE}",
+   "prompt_en": "The little orange fox cub claps his paws together happily several times with a big proud smile, swaying a little, tail swishing. Static camera. Light park ambience, no speech, no music."
+  }
+ ]
+}

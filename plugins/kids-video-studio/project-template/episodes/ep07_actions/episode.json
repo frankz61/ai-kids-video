@@ -1,0 +1,508 @@
+{
+ "id": "ep07_actions",
+ "output_name": "ep07_can_you_jump",
+ "title_en": "Can You Jump?",
+ "title_zh": "动起来",
+ "bg": "outdoor",
+ "lines": {
+  "n_lets_move": {
+   "role": "narrator",
+   "text": "[excited] One, two, three! Look!",
+   "zh": "一、二、三！看！"
+  },
+  "m_brush": {
+   "role": "hero",
+   "text": "[excited] My magic paintbrush!",
+   "zh": "我的魔法画笔！"
+  },
+  "n_jump_1": {
+   "role": "narrator",
+   "text": "[cheerfully] Jump!",
+   "zh": "跳！"
+  },
+  "n_jump_3": {
+   "role": "narrator",
+   "text": "[playfully] Jump, jump, jump!",
+   "zh": "跳，跳，跳！"
+  },
+  "m_yes_i_can": {
+   "role": "hero",
+   "text": "[proudly] Yes, I can!",
+   "zh": "我会！"
+  },
+  "n_run_1": {
+   "role": "narrator",
+   "text": "[cheerfully] Run!",
+   "zh": "跑！"
+  },
+  "n_run_3": {
+   "role": "narrator",
+   "text": "[playfully] Run, run, run!",
+   "zh": "跑，跑，跑！"
+  },
+  "n_clap_1": {
+   "role": "narrator",
+   "text": "[cheerfully] Clap!",
+   "zh": "拍手！"
+  },
+  "n_clap_3": {
+   "role": "narrator",
+   "text": "[playfully] Clap, clap, clap!",
+   "zh": "拍，拍，拍！"
+  },
+  "n_swim_1": {
+   "role": "narrator",
+   "text": "[cheerfully] Swim!",
+   "zh": "游泳！"
+  },
+  "n_swim_3": {
+   "role": "narrator",
+   "text": "[playfully] Swim, swim, swim!",
+   "zh": "游，游，游！"
+  },
+  "n_jump_like": {
+   "role": "narrator",
+   "text": "[encouraging] Jump like a rabbit!",
+   "zh": "像兔子一样跳！"
+  },
+  "n_clap_now": {
+   "role": "narrator",
+   "text": "[encouraging] Clap!",
+   "zh": "拍手！"
+  },
+  "n_clap_ans": {
+   "role": "narrator",
+   "text": "[cheerfully] Clap, clap, clap!",
+   "zh": "拍，拍，拍！"
+  },
+  "m_wow": {
+   "role": "hero",
+   "text": "[amazed] Wow!",
+   "zh": "哇！"
+  },
+  "n_swim_like": {
+   "role": "narrator",
+   "text": "[encouraging] Swim like a fish!",
+   "zh": "像小鱼一样游！"
+  },
+  "n_swim_ans": {
+   "role": "narrator",
+   "text": "[cheerfully] Swim, swim, swim!",
+   "zh": "游，游，游！"
+  },
+  "n_run_like": {
+   "role": "narrator",
+   "text": "[encouraging] Run like a dog!",
+   "zh": "像小狗一样跑！"
+  },
+  "n_run_ans": {
+   "role": "narrator",
+   "text": "[cheerfully] Run, run, run!",
+   "zh": "跑，跑，跑！"
+  },
+  "n_finish": {
+   "role": "narrator",
+   "text": "[excited] Jump, run, clap, swim! Yay, Fenlo!",
+   "zh": "跳、跑、拍手、游泳！耶，芬洛！"
+  },
+  "n_chant_jump": {
+   "role": "narrator",
+   "text": "[rhythmic, cheerful] Jump, jump, I can jump!",
+   "zh": "跳，跳，我会跳！"
+  },
+  "n_chant_run": {
+   "role": "narrator",
+   "text": "[rhythmic, cheerful] Run, run, I can run!",
+   "zh": "跑，跑，我会跑！"
+  },
+  "n_chant_clap": {
+   "role": "narrator",
+   "text": "[rhythmic, cheerful] Clap, clap, I can clap!",
+   "zh": "拍，拍，我会拍手！"
+  },
+  "n_chant_swim": {
+   "role": "narrator",
+   "text": "[rhythmic, cheerful] Swim, swim, I can swim!",
+   "zh": "游，游，我会游泳！"
+  },
+  "m_can_jump": {
+   "role": "hero",
+   "text": "[curious] Can you jump?",
+   "zh": "你会跳吗？"
+  },
+  "m_can_run": {
+   "role": "hero",
+   "text": "[curious] Can you run?",
+   "zh": "你会跑吗？"
+  },
+  "m_can_clap": {
+   "role": "hero",
+   "text": "[curious] Can you clap?",
+   "zh": "你会拍手吗？"
+  },
+  "m_can_swim": {
+   "role": "hero",
+   "text": "[curious] Can you swim?",
+   "zh": "你会游泳吗？"
+  }
+ },
+ "segments": [
+  {
+   "id": "intro",
+   "type": "intro"
+  },
+  {
+   "id": "ritual",
+   "type": "ritual",
+   "say": "m_brush"
+  },
+  {
+   "id": "jump",
+   "type": "teach",
+   "item": "rabbit",
+   "reveal": "draw",
+   "word": "jump",
+   "color": "#e8413c",
+   "beats": [
+    {
+     "say": "m_can_jump",
+     "q": true,
+     "after": 2.0
+    },
+    {
+     "say": "n_jump_1",
+     "word": true,
+     "act": true,
+     "after": 4.0
+    },
+    {
+     "say": "n_jump_3",
+     "act": true,
+     "after": 4.0
+    },
+    {
+     "say": "m_yes_i_can",
+     "pulse": true,
+     "after": 1.2
+    }
+   ]
+  },
+  {
+   "id": "run",
+   "type": "teach",
+   "item": "dog",
+   "reveal": "draw",
+   "word": "run",
+   "color": "#a8693a",
+   "beats": [
+    {
+     "say": "m_can_run",
+     "q": true,
+     "after": 2.0
+    },
+    {
+     "say": "n_run_1",
+     "word": true,
+     "act": true,
+     "after": 4.0
+    },
+    {
+     "say": "n_run_3",
+     "act": true,
+     "after": 4.0
+    },
+    {
+     "say": "m_yes_i_can",
+     "pulse": true,
+     "after": 1.2
+    }
+   ]
+  },
+  {
+   "id": "clap",
+   "type": "teach",
+   "item": "hands",
+   "reveal": "draw",
+   "word": "clap",
+   "color": "#f0b400",
+   "beats": [
+    {
+     "say": "m_can_clap",
+     "q": true,
+     "after": 2.0
+    },
+    {
+     "say": "n_clap_1",
+     "word": true,
+     "act": true,
+     "after": 4.0
+    },
+    {
+     "say": "n_clap_3",
+     "act": true,
+     "after": 4.0
+    },
+    {
+     "say": "m_yes_i_can",
+     "pulse": true,
+     "after": 1.2
+    }
+   ]
+  },
+  {
+   "id": "swim",
+   "type": "teach",
+   "item": "fish",
+   "reveal": "draw",
+   "word": "swim",
+   "color": "#3f8fe8",
+   "beats": [
+    {
+     "say": "m_can_swim",
+     "q": true,
+     "after": 2.0
+    },
+    {
+     "say": "n_swim_1",
+     "word": true,
+     "act": true,
+     "after": 4.0
+    },
+    {
+     "say": "n_swim_3",
+     "act": true,
+     "after": 4.0
+    },
+    {
+     "say": "m_yes_i_can",
+     "pulse": true,
+     "after": 1.2
+    }
+   ]
+  },
+  {
+   "id": "quiz1",
+   "type": "quiz",
+   "items": [
+    "rabbit",
+    "hands",
+    "fish",
+    "dog"
+   ],
+   "rounds": [
+    {
+     "target": "rabbit",
+     "ask": "n_jump_like",
+     "answer": "n_jump_3",
+     "demo": true,
+     "act": true,
+     "word": "jump",
+     "wait": 4.0
+    },
+    {
+     "target": "hands",
+     "ask": "n_clap_now",
+     "answer": "n_clap_ans",
+     "act": true,
+     "word": "clap"
+    }
+   ]
+  },
+  {
+   "id": "quiz2",
+   "type": "quiz",
+   "items": [
+    "dog",
+    "fish",
+    "rabbit",
+    "hands"
+   ],
+   "rounds": [
+    {
+     "target": "fish",
+     "ask": "n_swim_like",
+     "answer": "n_swim_ans",
+     "act": true,
+     "word": "swim"
+    },
+    {
+     "target": "dog",
+     "ask": "n_run_like",
+     "answer": "n_run_ans",
+     "act": true,
+     "word": "run"
+    }
+   ]
+  },
+  {
+   "id": "finish",
+   "type": "teach",
+   "item": "finish",
+   "reveal": "draw",
+   "beats": [
+    {
+     "say": "n_finish",
+     "pulse": true,
+     "after": 1.4
+    }
+   ]
+  },
+  {
+   "id": "chant",
+   "type": "chant",
+   "items": [
+    "rabbit",
+    "dog",
+    "hands",
+    "fish"
+   ],
+   "repeat": 2,
+   "lines": [
+    {
+     "say": "n_chant_jump",
+     "item": "rabbit",
+     "word": "jump"
+    },
+    {
+     "say": "n_chant_run",
+     "item": "dog",
+     "word": "run"
+    },
+    {
+     "say": "n_chant_clap",
+     "item": "hands",
+     "word": "clap"
+    },
+    {
+     "say": "n_chant_swim",
+     "item": "fish",
+     "word": "swim"
+    }
+   ]
+  },
+  {
+   "id": "outro",
+   "type": "outro",
+   "items": [
+    "rabbit",
+    "dog",
+    "hands",
+    "fish"
+   ],
+   "words": [
+    "jump",
+    "run",
+    "clap",
+    "swim"
+   ]
+  }
+ ],
+ "order": [
+  [
+   "h5",
+   "intro"
+  ],
+  [
+   "h3",
+   1,
+   [
+    [
+     "n_lets_move",
+     0.6
+    ]
+   ]
+  ],
+  [
+   "h5",
+   "ritual"
+  ],
+  [
+   "h5",
+   "jump"
+  ],
+  [
+   "h5",
+   "run"
+  ],
+  [
+   "h3",
+   3,
+   [
+    [
+     "m_yes_i_can",
+     1.2
+    ]
+   ]
+  ],
+  [
+   "h5",
+   "clap"
+  ],
+  [
+   "h5",
+   "swim"
+  ],
+  [
+   "h5",
+   "quiz1"
+  ],
+  [
+   "h3",
+   4,
+   [
+    [
+     "m_wow",
+     1.6
+    ]
+   ],
+   "../ep02_numbers/h3/clips_1080p/shot_04.mp4"
+  ],
+  [
+   "h5",
+   "quiz2"
+  ],
+  [
+   "h5",
+   "finish"
+  ],
+  [
+   "h3",
+   5,
+   [
+    [
+     "m_yes_i_can",
+     1.2
+    ]
+   ]
+  ],
+  [
+   "h5",
+   "chant"
+  ],
+  [
+   "h5",
+   "outro"
+  ]
+ ],
+ "notes": [
+  {
+   "segments": [
+    "jump",
+    "run",
+    "clap",
+    "swim",
+    "quiz1",
+    "quiz2"
+   ],
+   "text": "在原地轻轻做，也可以坐着用手势参与。"
+  }
+ ],
+ "skin": {
+  "items": {
+   "rabbit": "rabbit_hop",
+   "dog": "dog_gallop",
+   "hands": "bear_clap",
+   "fish": "fish_swim"
+  }
+ }
+}

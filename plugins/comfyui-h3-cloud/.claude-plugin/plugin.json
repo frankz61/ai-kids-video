@@ -1,0 +1,17 @@
+{
+  "name": "comfyui-h3-cloud",
+  "description": "Rent a cloud GPU (Google Colab or AutoDL), deploy ComfyUI with MiniMax H3 video, MiniMax-H3-Image and 1080p upscalers, map it to local port 8188, call it, and release it.",
+  "version": "0.1.0",
+  "author": {
+    "name": "frankz61"
+  },
+  "license": "TODO",
+  "keywords": [
+    "comfyui",
+    "minimax-h3",
+    "colab",
+    "autodl",
+    "video-generation",
+    "gpu"
+  ]
+}

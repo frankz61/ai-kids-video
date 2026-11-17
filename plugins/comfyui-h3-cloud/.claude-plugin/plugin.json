@@ -7,7 +7,7 @@
   },
   "homepage": "https://github.com/frankz61/ai-kids-video",
   "repository": "https://github.com/frankz61/ai-kids-video",
-  "license": "TODO",
+  "license": "MIT",
   "keywords": [
     "comfyui",
     "minimax-h3",

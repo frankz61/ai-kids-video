@@ -144,7 +144,10 @@ def main():
                  "-vf", f"scale={VW}:{VH}:force_original_aspect_ratio=increase,crop={VW}:{VH},fps={FPS},format=yuv420p",
                  *enc, "-frames:v", round(dur * FPS), out])
             amb = out.with_name(out.stem + "_amb.wav")   # the clip's own native ambience
-            run(["ffmpeg", "-y", "-loglevel", "error", "-i", clip, "-vn", "-af", f"aresample={SR}",
+            # H3 sometimes talks although asked not to: tools/strip_h3_voices.sh keeps only the non-vocal part (h3/amb/)
+            clean = ep / "h3" / "amb" / f"shot_{item[1]:02d}.wav"
+            src = clean if len(item) <= 3 and clean.exists() else clip
+            run(["ffmpeg", "-y", "-loglevel", "error", "-i", src, "-vn", "-af", f"aresample={SR}",
                  "-ar", SR, "-ac", "2", "-c:a", "pcm_s16le", amb])
             base = np.zeros((round(dur * SR), 2), np.float32)
             a = read_wav(amb)[: len(base)]

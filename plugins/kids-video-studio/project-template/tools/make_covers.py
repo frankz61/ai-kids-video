@@ -288,7 +288,8 @@ def build_sparkles_svg(pts: list[tuple[int, int, int]]) -> str:
 def build_html(ep_dir: Path, spec: dict, cfg: dict, num: int, aspect: str) -> str:
     lay = ASPECT_LAYOUTS[aspect]
     frame_url = file_url(ep_dir / "h3" / "frames" / cfg["frame"])
-    items_js_url = file_url(ROOT / "engine" / "h5" / "items.js")
+    # items.js first, then per-season files (e.g. season2-items.js adds to window.ITEMS)
+    items_js_tags = "".join(f'<script src="{file_url(p)}"></script>' for p in sorted((ROOT / "engine" / "h5").glob("*items.js")))
     zh_font_url = file_url(ROOT / "assets" / "fonts" / "KidsSubSans-Bold.ttf")
     nunito_path = Path.home() / "AppData" / "Local" / "Microsoft" / "Windows" / "Fonts" / "Nunito-VariableFont_wght.ttf"
     nunito_face = (
@@ -567,7 +568,7 @@ html, body {{ width: {sw}px; height: {sh}px; overflow: hidden; background: #fff;
     <div class="cards-grid" id="cards"></div>
   </div>
 </div>
-<script src="{items_js_url}"></script>
+{items_js_tags}
 <script>
 const cards = {cards_json};
 const scales = {scales_json};

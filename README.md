@@ -1,9 +1,9 @@
 # AI 儿童英语启蒙短视频：制作技能包
 
-一套给 Claude Code 用的插件（两个插件、7 个技能），记录了一部 12 集儿童英语启蒙系列片从剧本到发布的完整做法：
+一套给 Claude Code 用的插件（两个插件、10 个技能），记录了一部 12 集儿童英语启蒙系列片从剧本到发布的完整做法：
 视频模型出剧情镜头，网页动画做教学和互动，配音驱动时间轴，最后合成、加字幕、出封面和文案。
 
-> 状态：早期版本（0.1.0）。脚本取自一个真实项目，还没有在全新环境里完整跑通，见“已知限制”和“后续待办”。
+> 状态：早期版本（kids-video-studio 0.2.0）。脚本取自一个真实项目，还没有在全新环境里完整跑通，见“已知限制”和“后续待办”。
 
 ## 制作思路
 
@@ -34,8 +34,11 @@
 |---|---|
 | `/kids-video-studio:init-project` | 把项目模板复制到你的项目目录 |
 | [kids-video-pipeline](plugins/kids-video-studio/skills/kids-video-pipeline/SKILL.md) | 一集的完整流程：剧本评审、镜头、配音、H5 动画、合成、检查 |
-| [h5-3d-skin](plugins/kids-video-studio/skills/h5-3d-skin/SKILL.md) | H5 物件和背景换成 3D 风格图，动作词做逐帧动画，抠图问题排查 |
-| [video-covers-and-copy](plugins/kids-video-studio/skills/video-covers-and-copy/SKILL.md) | 单集封面、全季封面（16:9 和 4:3）、标题和简介、导出整季 |
+| [h5-3d-skin](plugins/kids-video-studio/skills/h5-3d-skin/SKILL.md) | H5 物件和背景换成 3D 风格图，先查公共素材库，抠图问题排查 |
+| [video-to-animation](plugins/kids-video-studio/skills/video-to-animation/SKILL.md) | 动作词、开关推拉、天气做成逐帧动画（图生视频 → 抠图 → 精灵表），循环或只播一遍 |
+| [h3-voice-cleanup](plugins/kids-video-studio/skills/h3-voice-cleanup/SKILL.md) | 用 Whisper 查出 H3 镜头原声里的人声，在 Colab 上用 Demucs 去掉，只留环境音 |
+| [season-review-page](plugins/kids-video-studio/skills/season-review-page/SKILL.md) | 整季快速审查网页：切剧集、调倍速、按章节和台词跳转、记审查意见 |
+| [video-covers-and-copy](plugins/kids-video-studio/skills/video-covers-and-copy/SKILL.md) | 任意一季的单集封面、全季封面（16:9 和 4:3）、标题和简介、导出上传目录 |
 | [colab-tts-compare](plugins/kids-video-studio/skills/colab-tts-compare/SKILL.md) | 在 Colab 上并排对比多个开源配音模型 |
 
 依赖关系：`kids-video-studio` 出镜头和物件图时需要 `127.0.0.1:8188` 上有服务，这个服务由 `comfyui-h3-cloud` 部署。
@@ -52,13 +55,13 @@ plugins/
   kids-video-studio/
     .claude-plugin/plugin.json
     commands/init-project.md           复制项目模板的命令
-    skills/<4 个技能>/SKILL.md (+ scripts/)
+    skills/<7 个技能>/SKILL.md (+ scripts/)
     project-template/                  复制到用户项目里使用
       tools/                流水线脚本（Python + Node）
       engine/h5/            数据驱动的 H5 动画引擎（engine.js、items.js、engine.css）
       episodes/             两集样例：ep03_fruit（基础）、ep07_actions（含逐帧动画）
       assets/skin/prompts.json   全部 3D 风格物件、遮挡物、背景的提示词和抠图参数
-      seasons/s01/          季大纲、通用台词、标题与简介样例
+      seasons/s01/          季大纲、通用台词、标题与简介样例、封面配置 covers.json
 ```
 
 ## 安装和使用
@@ -76,7 +79,7 @@ plugins/
 然后：
 
 1. 在一个空的项目目录里运行 `/kids-video-studio:init-project`，得到 `tools/`、`engine/`、`episodes/` 等。
-2. 环境：Python 3.10+（numpy、opencv-python、Pillow、fonttools）、Node 18+、ffmpeg、本机的 Chrome 或 Edge。
+2. 环境：Python 3.10+（numpy、opencv-python、Pillow、fonttools；查镜头原声另需 faster-whisper、scipy）、Node 18+、ffmpeg、本机的 Chrome 或 Edge。
 3. 密钥只放环境变量或用户目录下的配置文件：`ELEVENLABS_API_KEY`、`AUTODL_TOKEN`（或 `~/.config/autodl/token`）。
    Colab 用 `colab` 命令行工具自己的登录。不要把任何密钥写进仓库。
 4. 说“在 Colab 上启动 H3 服务”“做下一集”“重做封面”之类的话，对应的技能会自动加载；也可以用 `/插件名:技能名` 直接调用。

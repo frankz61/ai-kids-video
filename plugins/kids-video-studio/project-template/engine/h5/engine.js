@@ -85,7 +85,7 @@
     const key = id + "#" + copy;
     if (!itemPool[key]) {
       const an = animOf(id);
-      const e = el("div", "obj", an ? `<div class="anim" style="background-image:url('${an.sheet}');background-size:${an.cols * 200}px ${an.rows * 200}px;transform:scale(${an.zoom || 1})"></div>`
+      const e = el("div", "obj", an ? `<div class="anim" style="background-image:url('${an.sheet}');background-size:${an.cols * 200}px ${an.rows * 200}px;transform:translate(${(an.shift || [0, 0])[0]}px,${(an.shift || [0, 0])[1]}px) scale(${an.zoom || 1})"></div>`
         : art(skinOf("items", id), ITEMS[id].svg));
       if (an) { e._anim = an; e._cell = e.firstElementChild; }
       if (skinOf("items", id)) { if ((SKIN.noShadow || []).includes(id)) e._skin = true; else shadowFor(e); }
@@ -134,7 +134,11 @@
   // (restY = the item's resting centre; the shadow shrinks and fades as the item rises or hovers higher above the ground).
   function putItem(e, o, restY, i = 0) {
     if (!e._skin) return put(e, o);
-    if (e._anim) { const k = Math.floor(NOW * e._anim.fps + i * 3) % e._anim.n;
+    if (e._anim) {
+      // a "once" clip (a box that opens, a car pushed along) starts when the item appears and then holds its last frame
+      if (e._anim.once) { if (!((o.o ?? 1) > 0)) e._t0 = null; else if (e._t0 == null || NOW < e._last || NOW - e._last > 0.25) e._t0 = NOW; e._last = NOW; }
+      const k = e._anim.once ? Math.min(e._anim.n - 1, Math.floor((NOW - (e._t0 ?? NOW)) * e._anim.fps))
+        : Math.floor(NOW * e._anim.fps + i * 3) % e._anim.n;
       e._cell.style.backgroundPosition = `${-(k % e._anim.cols) * 200}px ${-Math.floor(k / e._anim.cols) * 200}px`; o = { ...o, ry: 0 }; }
     put(e, { ...o, ry: o.ry ?? Math.sin(NOW * 1.1 + i * 1.7) * 10 });
     if (e._front) put(e._front, o);

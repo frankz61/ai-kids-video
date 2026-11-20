@@ -1,0 +1,272 @@
+{
+ "_doc": "python tools/make_season_covers.py seasons/s01 covers|season|export  (see the video-covers-and-copy skill)",
+ "code": "S01",
+ "ep_tag": "第一季 · 第 {n} 集",
+ "export_dir": "export",
+ "hero": {
+  "width": 1120,
+  "left": -150,
+  "top": 90,
+  "fade_start": 42,
+  "fade_end": 58
+ },
+ "hero_4x3": {
+  "width": 900,
+  "left": -130,
+  "top": 214,
+  "fade_start": 44,
+  "fade_end": 55
+ },
+ "episodes": [
+  {
+   "dir": "ep03_fruit",
+   "frame": "shot_04.png",
+   "hero": {
+    "width": 1120,
+    "left": -145,
+    "top": 90,
+    "fade_start": 42,
+    "fade_end": 58
+   },
+   "hero_4x3": {
+    "width": 900,
+    "left": -125,
+    "top": 214,
+    "fade_start": 44,
+    "fade_end": 55
+   },
+   "theme": {
+    "primary": "#E8413C",
+    "pill": "#49A842",
+    "wash1": "rgba(238,250,217,0.92)",
+    "wash2": "rgba(255,242,222,0.97)"
+   },
+   "cards": [
+    {
+     "label": "apple",
+     "color": "#E8413C",
+     "bg": "#FFF2F1",
+     "items": [
+      [
+       "apple",
+       124,
+       0,
+       0,
+       0
+      ]
+     ]
+    },
+    {
+     "label": "banana",
+     "color": "#D99300",
+     "bg": "#FFFBEB",
+     "items": [
+      [
+       "banana",
+       124,
+       0,
+       0,
+       0
+      ]
+     ]
+    },
+    {
+     "label": "pear",
+     "color": "#6E9B14",
+     "bg": "#F4FAE8",
+     "items": [
+      [
+       "pear",
+       124,
+       0,
+       0,
+       0
+      ]
+     ]
+    },
+    {
+     "label": "strawberry",
+     "color": "#E8413C",
+     "bg": "#FFF2F1",
+     "items": [
+      [
+       "strawberry",
+       124,
+       0,
+       0,
+       0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "dir": "ep07_actions",
+   "frame": "shot_03.png",
+   "hero": {
+    "width": 1160,
+    "left": -175,
+    "top": 68,
+    "fade_start": 44,
+    "fade_end": 60
+   },
+   "hero_4x3": {
+    "width": 960,
+    "left": -180,
+    "top": 180,
+    "fade_start": 44,
+    "fade_end": 55
+   },
+   "theme": {
+    "primary": "#E8413C",
+    "pill": "#2C7BE5",
+    "wash1": "rgba(224,244,255,0.92)",
+    "wash2": "rgba(255,238,219,0.97)"
+   },
+   "cards": [
+    {
+     "label": "jump",
+     "color": "#D96684",
+     "bg": "#FFF1F5",
+     "items": [
+      [
+       "rabbit",
+       122,
+       0,
+       0,
+       -4
+      ]
+     ]
+    },
+    {
+     "label": "run",
+     "color": "#A8693A",
+     "bg": "#FDF5EE",
+     "items": [
+      [
+       "dog",
+       122,
+       0,
+       0,
+       0
+      ]
+     ]
+    },
+    {
+     "label": "clap",
+     "color": "#E8413C",
+     "bg": "#FFF2F1",
+     "items": [
+      [
+       "hands",
+       122,
+       0,
+       0,
+       0
+      ]
+     ]
+    },
+    {
+     "label": "swim",
+     "color": "#2C7BE5",
+     "bg": "#EFF6FF",
+     "items": [
+      [
+       "fish",
+       122,
+       0,
+       0,
+       0
+      ]
+     ]
+    }
+   ]
+  }
+ ],
+ "season_cover": {
+  "title_zh": "芬洛的魔法画笔",
+  "title_en": "英语启蒙 · Season 1",
+  "tag": "第一季 · 全 12 集",
+  "hero_episode": "ep03_fruit",
+  "theme": {
+   "primary": "#E8413C",
+   "pill": "#3F8FE8",
+   "wash1": "rgba(255,244,214,0.92)",
+   "wash2": "rgba(219,242,255,0.97)"
+  },
+  "tiles": [
+   [
+    "apple",
+    "颜色",
+    "#E8413C",
+    "#FFF2F1"
+   ],
+   [
+    "balloon_blue",
+    "数字",
+    "#2C7BE5",
+    "#EFF6FF"
+   ],
+   [
+    "banana",
+    "水果",
+    "#D99300",
+    "#FFFBEB"
+   ],
+   [
+    "cat",
+    "动物",
+    "#68707C",
+    "#F4F5F7"
+   ],
+   [
+    "nose",
+    "五官",
+    "#EA7B1E",
+    "#FFF5EB"
+   ],
+   [
+    "basket",
+    "野餐",
+    "#329E40",
+    "#EFFBF0"
+   ],
+   [
+    "rabbit_hop",
+    "动作",
+    "#D96684",
+    "#FFF1F5"
+   ],
+   [
+    "mom",
+    "家人",
+    "#9356C4",
+    "#F7F1FF"
+   ],
+   [
+    "happy",
+    "心情",
+    "#D99300",
+    "#FFFBEB"
+   ],
+   [
+    "milk",
+    "早餐",
+    "#4E7EC9",
+    "#EFF5FF"
+   ],
+   [
+    "car",
+    "大小",
+    "#2C7BE5",
+    "#EFF6FF"
+   ],
+   [
+    "bear_clap",
+    "派对",
+    "#E8413C",
+    "#FFF2F1"
+   ]
+  ]
+ }
+}

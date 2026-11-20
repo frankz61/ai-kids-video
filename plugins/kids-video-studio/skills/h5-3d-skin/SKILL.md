@@ -54,6 +54,25 @@ python -u tools/make_episode.py episodes/<ep> tts capture assemble check
 
 手写页面的集（`custom_page: true`）要自己在 `h5/index.html` 里引用这些图，然后只跑 `capture assemble check`。
 
+## 素材规则：先查公共库，默认 3D，动作用视频转动画
+
+素材全项目共用一个库：物件定义在 `engine/h5/*items.js`，3D 图和动画在 `assets/skin/`。
+
+1. **先查库，有就复用**，同一样东西各集长得一样：
+   ```bash
+   python tools/asset_check.py find socks umbrella     # 已有的物件和类型：anim / 3d / 3d-group / flat
+   ```
+2. **默认 3D**：新物件一律生成 3D 图，矢量图只是兜底。几样东西有空间关系（球在盒子里、下面、后面）时整体生成一张图，不要叠图。
+3. **动词、动作、会动的天气用视频转动画**（见下面“动作词做成逐帧动画”）：静态图孩子分不清跑和跳、开和关。
+
+出片前检查本集，有扁平图或动作词没有动画时会标出来并返回 1：
+
+```bash
+python tools/asset_check.py episode episodes/<ep>
+```
+
+动作词表在 `asset_check.py` 的 `ACTION_WORDS`，按需要补充。
+
 ## 新增或重做一个物件
 
 在 `assets/skin/prompts.json` 的 `items` 里加一条，然后：
@@ -103,38 +122,13 @@ python tools/make_skin.py <名字> --force     # 重新生成
 
 ## 动作词做成逐帧动画
 
-静态图再怎么摆姿势，4-6 岁的孩子也分不清“跑”和“跳”。动作词要真的动起来。
-
-`items` 里加一条带 `video` 的物件：
-
-```json
-"rabbit_hop": {"video": {"from": "rabbit",
-  "prompt": "The little white rabbit jumps straight up high into the air and lands back on the same spot, two big bouncy jumps, ears flopping. It stays in the centre and does not travel.",
-  "seed": 7111, "key": "blue", "keySat": 0.5, "place": [0.5, 0.93, 0.4],
-  "frames": 56, "step": 1, "fps": 16, "zoom": 1.7, "cell": 280}}
-```
+动词、动作和会动的天气做成逐帧动画（物件图当首帧 → H3 图生视频 → 逐帧抠图 → 精灵表），做法、选项和踩过的坑见
+`video-to-animation` 技能。最短的用法：
 
 ```bash
-python tools/make_anim.py rabbit_hop        # 需要本机 8188 的 MiniMax H3 视频服务
+python tools/make_anim.py rabbit_hop        # prompts.json 里带 "video" 的物件；需要本机 8188 的 MiniMax H3 视频服务
 python tools/make_skin.py --offline         # 刷新清单
 ```
-
-做法和原因：
-
-1. 把已有的物件图贴到纯色幕布上，作为视频的**首帧**。
-2. **同一张图同时作为尾帧**。不给尾帧时，模型会自己加森林背景并让角色跑出画面；首尾相同则背景不会漂，而且首尾相接可以无缝循环。
-3. 提示词只写“原地”的动作，并写明镜头不动、背景不变、没有地面和阴影。
-4. 逐帧抠图，按整个循环里主体碰到的范围裁一个固定方窗（保留位移），打包成精灵表 `<名字>_anim.png`。
-5. 引擎按时间取帧：`帧号 = floor(时间 × fps) mod 帧数`，并关掉这个物件原有的跳动和摇晃。
-
-参数经验：
-
-- `frames` 取 39 或 56（模型要求 17k+5）。跑这类快动作 39 帧，跳和拍手 56 帧。
-- **用全部帧（`step: 1`），fps 14-16**。隔帧抽取再用 12fps 播放，看起来又快又闪。
-- `zoom` 把循环里的主体放大到和静态物件差不多大；`place` 是主体在首帧里的位置 `[中心 x, 底 y, 高]`（占画面的比例）。
-- `anim_<名字>_check.jpg` 是抽帧条，用来检查抠图和动作。
-- “拍手”不要用一双孤立的手：视频模型会让一只手转走消失，程序化合成的手套又不像拍手。换成**一个角色在拍手**（示例里是小熊）孩子更容易懂，也更稳定。
-- 封面上动画物件用它的一帧静态图（`raw/<名字>_cut.png`）。
 
 ## 内容上的经验
 

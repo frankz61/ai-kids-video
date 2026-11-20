@@ -117,6 +117,8 @@ python tools/clip_sheet.py check.jpg episodes/<ep>/h3/clips_1080p/shot_01.mp4 ..
 - 耗时（A100）：首帧几秒，视频每条 2-4 分钟，超分约 50 秒。
 - **改了某个镜头的提示词或种子，直接重跑**：`frames/shot_NN.sig` 记录提示词签名，签名变了会自动删掉该镜头的首帧、视频和超分结果并重新生成。
 - 出片后一定用 `clip_sheet.py` 看首/中/尾帧，有问题的再用 `ffmpeg -vf "select='not(mod(n\,20))',tile=3x2"` 抽更密的帧确认。
+- **再查镜头原声**：H3 常常自己配一句话（英文胡话、中文），`python tools/h3_voice_check.py episodes/<ep>` 标出来，
+  `tools/strip_h3_voices.sh` 在 Colab 上去掉人声，合成时自动改用 `h3/amb/` 里的环境音。见 `h3-voice-cleanup` 技能。
 
 ## 4. 配音（ElevenLabs）
 
@@ -192,6 +194,7 @@ python -u tools/make_episode.py episodes/<ep> capture assemble check  # 只重�
 
 发给用户看时，用 ffmpeg 压一版 720p（`-vf scale=1280:720 -crf 27`）放到 `seasons/s01/previews/`，1080p 母版对手机端来说太大。
 每集出片后再跑 `python tools/overview_sheet.py episodes/<ep>`，生成 `build/overview.jpg` 通览全片。
+整季给用户审：`python tools/make_review_page.py seasons/<季>` 生成一个本地网页，切剧集、调倍速、按章节和台词跳转、记意见（`season-review-page` 技能）。
 
 ## 7. 发布前
 
@@ -215,6 +218,8 @@ python -u tools/make_episode.py episodes/<ep> capture assemble check  # 只重�
 | 字幕字很细或变成别的字体 | 字幕渲染库不支持可变字体的字重 | 用 `tools/make_sub_font.py` 导出的静态粗体，`fontsdir` 指向 `assets/fonts` |
 | ffmpeg `drawtext` 报 Fontconfig 错误 | 本机 ffmpeg 没有 fontconfig 配置 | 不用 `drawtext`，文字一律走 ASS 字幕 |
 | 片尾多个相同物件只显示一个 | 同一个物件 id 在页面里重复 | 引擎已改成复制节点；新段落类型也要注意 |
+| 镜头里角色自己说了一句中文或英文胡话 | 提示词写了 no speech，H3 仍会配话 | `h3_voice_check.py` 查、`strip_h3_voices.sh` 去人声（`h3-voice-cleanup`） |
+| 静态图分不清跑和跳、开和关 | 动作要看到才懂 | 动词和会动的天气做成逐帧动画（`video-to-animation`） |
 | 难过的表情看起来像生气 | 眉毛朝中间向下倾斜 | 眉毛内端朝上 |
 | PowerShell 里自定义函数 `R` 不执行 | `R` 是 `Invoke-History` 的别名 | 多处文本替换写成 Python 脚本，带出现次数断言 |
 | ffmpeg 按小数秒定位失败 | PowerShell 把小数格式化成了本地格式 | 用 `InvariantCulture` 格式化，或在 Python 里调 ffmpeg |
@@ -222,7 +227,10 @@ python -u tools/make_episode.py episodes/<ep> capture assemble check  # 只重�
 
 ## 相关技能
 
-- `h5-3d-skin`：把 H5 段落的物件和背景换成 3D 风格图片，动作词做成逐帧动画。
-- `video-covers-and-copy`：单集封面、全季封面、标题和简介。
+- `h5-3d-skin`：把 H5 段落的物件和背景换成 3D 风格图片；先查公共素材库（`tools/asset_check.py`）。
+- `video-to-animation`：动作词、开关推拉、会动的天气做成逐帧动画。
+- `h3-voice-cleanup`：查出并去掉 H3 镜头原声里的人声。
+- `season-review-page`：整季快速审查网页。
+- `video-covers-and-copy`：任意一季的单集封面、全季封面、标题和简介，导出上传目录。
 - `comfyui-h3-cloud` 插件的 `comfyui-h3-colab` / `comfyui-h3-autodl`：部署生图和生视频服务；`minimax-h3-service-caller`：调用服务（首帧、视频、超分）。
 - `colab-tts-compare`：开源配音模型对比。

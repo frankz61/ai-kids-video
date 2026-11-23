@@ -40,6 +40,7 @@ tools/
   season_lib.py      读 episode.json、配音缓存、ElevenLabs 合成和后期
   assemble_episode.py  通用 1080p 合成
   preview_episode.py   不配音、按估算时长生成 H5 页面，用来先看排版
+  make_asset_review.py 素材审核页：合成前逐项审素材，未通过的不让录制
   render_script.py     把 episode.json 渲染成可读剧本，用于评审
   capture.mjs        H5 逐帧录制（--scale 1.5 得到 1080p）
   h3_native.py       H3 图生视频批量（原生节点）
@@ -174,6 +175,24 @@ python -u tools/make_episode.py episodes/<ep> tts
 - 舞台 1280x720（录制时 deviceScaleFactor 1.5 → 1080p）。底部 `y > 610` 是字幕区，左上角是 AI 标识，不要放元素。
 - 先跑 `python tools/preview_episode.py episodes/<ep>`（估算时长），浏览器打开 `h5/index.html?seg=<id>` 或
   `node tools/capture.mjs <page> <dir> --still <seg>:<秒>` 截静帧看排版，确认后再配音和录制。
+
+## 5.6 素材审核页：用户审完素材再合成（必做）
+
+素材（3D 物件图、动画、背景、H3 首帧和镜头）全部生成、`tts` 写好 `h5/episode.js` 之后，先让用户审素材，再录制合成。
+否则像“土豆像石头、玉米叶子被抠掉、H3 镜头里多出一个人”这类问题要到看成片才发现，素材和成片都得返工。
+
+```bash
+python tools/make_asset_review.py seasons/<季> --serve      # 打开打印出的 http://127.0.0.1:8770/... ，审核结果自动存盘
+python tools/make_asset_review.py seasons/<季> --check       # 全季是否都通过（--check <集名> 只看某几集）
+```
+
+- 列出每集真正录制和合成用到的素材：`h5/episode.js` 里的物件图、动画（循环 + 静态图 + 原始视频）、背景，`order` 里每条 H3 镜头（首帧 + 片段 + 提示词）。
+  物件图同时显示抠图结果（紫格 / 白 / 黑底）和原图。
+- 每项“通过”或“重做”（重做必须写意见），可导出重做清单（意见、提示词、重做命令）。素材重新生成后自动回到待审（按文件内容哈希比对）。
+- 必审 = 本季前缀（如 `s3_`）的物件和背景、本季各集的 H3 镜头；旧素材只供参考。
+- 关卡：`make_episode.py ... capture` 先检查本集素材，有未审、重做、缺文件或审核后又改过的就停下（结果在 `seasons/<季>/asset_review.json`）。
+  只有生成过 `asset_review.html` 的季才启用；确需跳过设 `ASSET_REVIEW=skip`。
+- 不用 `--serve` 直接打开 html 也能审，结果存在浏览器里，审完点“导出 JSON”存成上面的文件。
 
 ## 6. 一键出片和验证
 

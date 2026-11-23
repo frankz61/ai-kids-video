@@ -28,7 +28,7 @@ import cv2
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from make_skin import SKIN, key_out  # noqa: E402
+from make_skin import SKIN, key_out, tone  # noqa: E402
 
 URL = os.environ.get("COMFY_URL", "http://127.0.0.1:8188")
 W, H = 1280, 736
@@ -101,6 +101,8 @@ def main():
         frames.append(key_out(fr, v.get("key", "blue"), v.get("keySat", 0.0), v.get("parts", False))[0])
     if "reverse" in v:
         frames = frames[::-1]           # the box that opens, played backwards, closes
+    if "tone" in v:                     # colour grade, as make_skin.py "tone" (a soaked sock: darker, cooler)
+        frames = [tone(f, v["tone"]) for f in frames]
     print(f"  {len(frames)} frames keyed", flush=True)
     thumbs = [cv2.resize(f[..., 3], (80, 46), interpolation=cv2.INTER_AREA).astype(np.float32) / 255 for f in frames]
     # first frame == last frame, so the whole clip is the loop; a clip played once keeps its last frame

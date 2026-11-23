@@ -10,7 +10,8 @@ lines come from TTS, so the clip audio must only be ambience. A flagged shot goe
 Flag rules: a segment is speech when Whisper's no_speech_prob < 0.5 and its text is not a known Whisper hallucination on
 music or room tone ("Thank you for watching", "Subtitles by ..."), and, when Whisper cannot tell the language
 (probability < 0.5), it has at least three words. The language Whisper detects is printed too: zh in an
-English show is always wrong. With --amb it also prints the loudness of the ambience and of the removed vocals.
+English show is always wrong. With --amb it also prints the loudness of the ambience and of the removed vocals, and a shot whose removed
+part is below -40 dB (no voice was there to take out) is not flagged: that is Whisper hearing words in noise.
 
 Needs: pip install faster-whisper (and numpy, scipy for --amb), ffmpeg.
 Windows notes: the CUDA build needs cuBLAS 12 DLLs; without them use --device cpu (small model: ~3 s a clip).
@@ -68,6 +69,9 @@ def main():
             if a.amb:
                 v = c.with_name(c.stem + "_removed_vocals.wav")
                 r["amb_db"], r["removed_db"] = db(c), (db(v) if v.exists() else None)
+            if a.amb and speech and r["removed_db"] is not None and r["removed_db"] < -40:
+                speech = []     # Demucs found no voice to remove: Whisper is reading words into straw rustle or wind
+                r["speech"] = False
             report[key] = r
             if speech:
                 flagged.append(key)

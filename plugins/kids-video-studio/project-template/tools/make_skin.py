@@ -5,6 +5,8 @@ Reads  assets/skin/prompts.json:
   {"items":  {"apple": {"prompt": "one shiny red apple ...", "seed": 11, "style": "object"|"animal"|"face"|"raw",
                         "key": "blue"|"green", "box": [x0, y0, x1, y1], "focus": [x, y], "noShadow": true},
               "nose":  {"from": "fenlo", "glow": [cx, cy, rx, ry], "focus": [x, y]},      # derived: base sprite + highlight ring
+              "hands": {"from": "hero_body", "spot": [[cx, cy, rx, ry], ...]},      # derived: rest grey, parts in colour + glow
+              "dry":   {"prompt": "...", "tone": {"mul": [r, g, b], "sat": 1, "gamma": 1}, "sparkle": [[x, y, size]]},
               "fenlo_nonose": {"from": "fenlo", "erase": [cx, cy, rx, ry]}},              # derived: a patch painted over
    "covers": {"basket": {"prompt": "...", "front": {"cx": 100, "cy": 98, "rx": 88, "ry": 20}}},
    "brush":  {"prompt": "..."},
@@ -155,6 +157,58 @@ def ring(img, cx, cy, rx, ry):
     return cv2.resize(big, (SIZE, SIZE), interpolation=cv2.INTER_AREA)
 
 
+def tone(img, t):
+    """Colour grade a cut-out (BGRA). t: {"mul": [r, g, b], "sat": 1.0, "gamma": 1.0} -- a soaked sock goes darker and
+    cooler ({"mul": [0.62, 0.72, 0.95], "gamma": 1.25}), a dry one brighter and warmer."""
+    bgr = img[..., :3].astype(np.float32) / 255
+    if t.get("sat", 1) != 1:
+        grey = bgr.mean(axis=2, keepdims=True)
+        bgr = grey + (bgr - grey) * t["sat"]
+    bgr = np.clip(bgr, 0, 1) ** t.get("gamma", 1)
+    r, g, b = t.get("mul", [1, 1, 1])
+    bgr = np.clip(bgr * np.array([b, g, r], np.float32), 0, 1)
+    return np.dstack([(bgr * 255).round().astype(np.uint8), img[..., 3]])
+
+
+def sparkle(img, stars):
+    """Small four-point shine stars (white with a warm edge): "clean / dry / new". stars: [[x, y, size], ...]."""
+    out = img.astype(np.float32)
+    h, w = img.shape[:2]
+    for x, y, r in stars:
+        m = np.zeros((h, w), np.float32)
+        c, rr = (round(x * K), round(y * K)), r * K
+        pts = [(c[0], c[1] - rr), (c[0] + rr * .22, c[1] - rr * .22), (c[0] + rr, c[1]), (c[0] + rr * .22, c[1] + rr * .22),
+               (c[0], c[1] + rr), (c[0] - rr * .22, c[1] + rr * .22), (c[0] - rr, c[1]), (c[0] - rr * .22, c[1] - rr * .22)]
+        cv2.fillPoly(m, [np.array(pts, np.int32)], 1.0, cv2.LINE_AA)
+        edge = np.clip(cv2.GaussianBlur(m, (0, 0), rr * .18) * 1.6, 0, 1)
+        for colour, mask in (((40, 200, 255), edge), ((255, 255, 255), m)):
+            out[..., :3] = out[..., :3] * (1 - mask[..., None]) + np.array(colour, np.float32) * mask[..., None]
+            out[..., 3] = np.maximum(out[..., 3], mask * 255)
+    return out.round().astype(np.uint8)
+
+
+def spot(img, parts):
+    """Spotlight: everything outside the ellipses goes grey and dim, the parts keep their colour and get a warm glow
+    around their outline (a body part the child should look at: "Touch your hands!"). parts: [[cx, cy, rx, ry], ...]."""
+    h, w = img.shape[:2]
+    m = np.zeros((h, w), np.float32)
+    for cx, cy, rx, ry in parts:
+        cv2.ellipse(m, (round(cx * K), round(cy * K)), (round(rx * K), round(ry * K)), 0, 0, 360, 1.0, -1, cv2.LINE_AA)
+    m = cv2.GaussianBlur(m, (0, 0), 3 * K)
+    bgr, a = img[:, :, :3].astype(np.float32), img[:, :, 3].astype(np.float32) / 255
+    grey = cv2.cvtColor(cv2.cvtColor(bgr.astype(np.uint8), cv2.COLOR_BGR2GRAY), cv2.COLOR_GRAY2BGR).astype(np.float32)
+    dim = bgr * 0.3 + (grey * 0.6 + 75) * 0.7           # mostly grey and lighter: the part stands out in colour
+    out = bgr * m[..., None] + dim * (1 - m[..., None])
+    part = a * (m > 0.5)                                  # the part's own silhouette
+    halo = cv2.GaussianBlur(cv2.dilate(part, np.ones((round(5 * K), round(5 * K)), np.uint8)), (0, 0), 2.5 * K)
+    halo = np.clip(halo * 1.8, 0, 1) * (1 - np.clip(part * 1.5, 0, 1))   # a ring around the part, not over it
+    glow = np.array([40, 205, 255], np.float32)           # warm yellow (BGR)
+    out = out * (1 - halo[..., None]) + glow * halo[..., None]
+    alpha = np.maximum(a, halo)
+    res = np.dstack([np.clip(out, 0, 255), alpha * 255]).astype(np.uint8)
+    return res
+
+
 def erase(img, cx, cy, rx, ry):
     """Paint the area over with the surrounding colour (Fenlo's portrait without a nose)."""
     mask = np.zeros(img.shape[:2], np.uint8)
@@ -200,6 +254,8 @@ def main():
                 img = erase(img, *j["erase"])
             if "glow" in j:
                 img = ring(img, *j["glow"])
+            if "spot" in j:
+                img = spot(img, j["spot"])
         else:
             src = raw / f"{name}.png"
             if "video" in j or "anim" in j:       # animated item (tools/make_anim.py): its still is raw/<name>_cut.png
@@ -222,6 +278,10 @@ def main():
             else:
                 bgra, bbox = key_out(raw_img[..., :3], j.get("key", "blue"), j.get("keySat", 0.0))
             img = fit(bgra, bbox, j.get("box", [10, 10, 190, 190]))
+        if "tone" in j:
+            img = tone(img, j["tone"])
+        if "sparkle" in j:
+            img = sparkle(img, j["sparkle"])
         made[name] = img
         cv2.imwrite(str(dst), img)
         if kind == "brush":

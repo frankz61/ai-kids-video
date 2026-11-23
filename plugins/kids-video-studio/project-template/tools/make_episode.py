@@ -7,11 +7,14 @@ Steps (default: all, in this order):
   upscale   RelayVSR x2 -> 1920x1080                               -> h3/clips_1080p/shot_NN.mp4
   tts       voice lines via the season cache (ElevenLabs)          -> audio/tts, h5/durations.js, h5/episode.js
   capture   H5 scenes at 1080p                                     -> build/h5/*.mp4 + timeline.json
+            (stops first while an asset of this episode is not approved on seasons/<season>/asset_review.html,
+             see tools/make_asset_review.py; ASSET_REVIEW=skip to override)
   assemble  final video, no-subtitle copy, .srt                    -> output/
   check     A/V sync + subtitle frame sheet                        -> build/check_*.jpg
 Shots listed with "reuse" in prompts.json are skipped by frames/clips/upscale (review episodes reuse earlier clips).
 """
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -87,6 +90,9 @@ def step_upscale(ep):
 
 
 def step_capture(ep):
+    if os.environ.get("ASSET_REVIEW") != "skip":     # assets reviewed on the season's asset review page first
+        from make_asset_review import gate
+        gate(ep)
     subprocess.run(["node", "capture.mjs", ep / "h5" / "index.html", ep / "build" / "h5", "--scale", "1.5"],
                    cwd=ROOT / "tools", check=True, stdin=subprocess.DEVNULL)
 

@@ -2,8 +2,9 @@
 """
 MiniMax H3 Video + Native Audio Generation Runner for ComfyUI on Colab
 Supports:
-  --mode quant : Sweet-Spot INT8-convrot + FP8 TE + 8-step Turbo LoRA (Recommended for A100 40GB / L4)
-  --mode bf16  : Full-Blooded BF16 UNet + BF16 TE + FP16 Video VAE + 20 native steps (For A100 80GB)
+  --mode quant : INT8-convrot UNet + INT8 text encoder + 8-step Turbo LoRA (default; A100 / H100)
+  --mode bf16  : BF16 UNet + BF16 text encoder + FP16 video VAE, 20 steps (A100 80GB / H100)
+A minimal deployment check: one first frame + one prompt -> one 5 s clip with audio. Do not use L4 / T4.
 """
 import argparse
 import json

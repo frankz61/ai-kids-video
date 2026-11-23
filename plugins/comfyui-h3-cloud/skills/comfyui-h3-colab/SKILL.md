@@ -11,32 +11,59 @@ description: >-
 
 # 在 Google Colab 上部署 ComfyUI + MiniMax H3
 
-部署好之后用 `minimax-h3-service-caller` 调用。国内网络或想按小时计费用 `comfyui-h3-autodl`。
+部署好之后用 `minimax-h3-service-caller` 调用。国内网络或想按小时计费，用 `comfyui-h3-autodl`。
+脚本路径相对本技能目录；装了什么、放在哪、日志在哪，见 [reference.md](./reference.md)。
 
-## 前置
+## 全流程一览
 
-- Colab 付费账号（要能申请 A100 / H100）。
-- `colab` 命令行工具（`google-colab-cli`，例如 `uv tool install google-colab-cli`），先完成它的 OAuth 登录。
-  Windows 上装在 WSL 里；不在 PATH 上时设环境变量 `COLAB_BIN`。
-- 本机有 `ssh`。脚本路径相对本技能目录。
+```
+本机                                    Colab 会话（A100 / H100）
+────                                    ────────────────────────
+1. provision_fast_gpu.py  ──申请 GPU──▶  colab new（按顺序试 4 种高速规格）
+                          ──上传并运行─▶  setup_colab_h3.sh：装 ComfyUI → 下模型 → 启动 8188 → cloudflared
+                          ◀──打印──────  COMFYUI_READY_ON_8188 + trycloudflare 地址
+2. keep_ssh_tunnel.sh     ══SSH 隧道══▶  127.0.0.1:8188（同时给会话保活）
+3. 验证：curl / h3_client.py status / run_h3_t2v.py 出一条测试视频
+4. 干活（minimax-h3-service-caller）
+5. colab stop + 停隧道    ──────────▶   会话结束，停止计费
+```
 
-## 1. 只用高速 GPU
+整个部署约 5-10 分钟：申请 GPU 几十秒到几分钟，下载模型约 2.5 分钟（`quant`）或 5.5 分钟（`bf16`），装依赖和启动约 2-3 分钟。
 
-| 规格 | 命令行参数 | 说明 |
+## 0. 前置条件（一次性）
+
+| 要准备的 | 说明 |
+|---|---|
+| Colab 付费账号 | 能申请 A100 / H100。按计算单元计费，用 `colab status` 看余量和消耗速度 |
+| `colab` 命令行工具 | `google-colab-cli`，例如 `uv tool install google-colab-cli`；按它的说明完成一次 OAuth 登录 |
+| Windows 用户 | 把 `colab` 和下面的脚本都放在 **WSL** 里运行。`colab` 不在 PATH 上时设 `export COLAB_BIN=/path/to/colab` |
+| `ssh` 客户端 | 隧道和远程执行都走 `colab ssh --proxy-mode`，不需要额外配密钥 |
+
+先确认登录正常、没有残留会话：
+
+```bash
+colab status          # 能列出账号信息；如有不用的旧会话先 colab stop -s <名字>
+```
+
+## 1. 选 GPU 和模型档位
+
+**只用高速 GPU，不要用 L4 / T4。** L4 只有 22GB 显存，装不下量化版整套模型，每步约 47 秒，一条 5 秒视频要 8-9 分钟。
+脚本申请不到高速 GPU 时直接失败退出，不会降级。
+
+| 申请顺序 | 参数 | 规格 |
 |---|---|---|
-| A100 80GB + 大内存（首选） | `--gpu A100 --high-mem` | 量化版每步约 13.6 秒，5 秒 720p 视频采样约 109 秒 |
-| H100 80GB | `--gpu H100 --high-mem` / `--gpu H100` | |
-| A100 40GB | `--gpu A100` | |
+| 1（首选） | `--gpu A100 --high-mem` | A100 80GB + 约 171GB 内存 |
+| 2 | `--gpu H100 --high-mem` | H100 80GB + 大内存 |
+| 3 | `--gpu H100` | H100 80GB |
+| 4 | `--gpu A100` | A100 40GB + 约 85GB 内存 |
 
-**不要用 L4 / T4**：L4（22GB 显存）装不下量化版整套模型，每步约 47 秒，一条视频 8-9 分钟。脚本申请不到高速 GPU 时会直接失败，不降级。
+| 模型档位 | 内容 | 下载量和时间 | 采样 | 5 秒 720p 视频（A100 80GB） |
+|---|---|---|---|---|
+| `quant`（默认，推荐） | INT8 量化 UNet、文本编码器、视频 VAE + 8 步 Turbo LoRA | 约 53 GB，约 2.5 分钟 | 8 步 | 约 109 秒（每步约 13.6 秒） |
+| `bf16` | 全精度，不用 LoRA | 约 118 GB，约 5.5 分钟 | 20 步，cfg 4.0 | 约 330 秒 |
 
-| 模型档位 | 下载量 | 采样 | 5 秒 720p 耗时（A100 80GB） |
-|---|---|---|---|
-| `quant`（默认）：INT8 量化 + 8 步 Turbo LoRA | 约 53 GB，约 2.5 分钟 | 8 步 | 约 109 秒 |
-| `bf16`：全精度 | 约 118 GB，约 5.5 分钟 | 20 步，cfg 4.0 | 约 330 秒 |
-
-ComfyUI 启动参数固定带 `--disable-dynamic-vram`：默认的动态显存管理不会卸载约 26 GB 的文本编码器，
-它和约 20 GB 的 UNet 同时占显存。加上这个参数后，文本编码完就卸到内存，UNet 整个装进显存。
+两档 ComfyUI 都带 `--disable-dynamic-vram` 启动。原因：默认的动态显存管理不会卸载约 26GB 的文本编码器，
+它和约 20GB 的 UNet 同时占着显存；加上这个参数后，文本编码完就卸到内存，UNet 整个装进显存（日志里是 `full load: True`）。
 
 ## 2. 一条命令申请并部署
 
@@ -44,52 +71,91 @@ ComfyUI 启动参数固定带 `--disable-dynamic-vram`：默认的动态显存�
 python3 -u scripts/provision_fast_gpu.py --session minimax-h3 --mode quant --with-h3-image 1 --with-upscale 1
 ```
 
-它依次尝试 `A100 --high-mem`、`H100 --high-mem`、`H100`、`A100`，申请成功后上传并运行 [setup_colab_h3.sh](./scripts/setup_colab_h3.sh)：
-装 ComfyUI 和自定义节点，aria2c 16 线程下载模型，启动服务和 cloudflared 隧道。结束时打印：
+| 参数 | 默认 | 作用 |
+|---|---|---|
+| `--session` / `-s` | `minimax-h3` | 会话名，后面的隧道、释放都用它 |
+| `--mode` | `quant` | 模型档位，见上表 |
+| `--with-h3-image` | `1` | 装 MiniMax-H3-Image 生图（和视频共用文本编码器，只多下 UNet 和 VAE） |
+| `--with-qwen-t2i` | `0` | 另装 Qwen-Image 2512 + 4 步 Lightning LoRA（可选的另一个生图模型） |
+| `--with-upscale` | `1` | 装 RelayVSR x2 和 RealESRGAN 超分模型 |
+| `--rounds` | `4` | 4 种规格轮流申请几轮 |
+
+脚本做的事：
+
+1. 按上面的顺序 `colab new` 申请 GPU，每次最多等 75 秒；超时会用 `colab status` 确认是不是其实已经分到了。
+2. 申请成功后，用 `colab upload` 把 [setup_colab_h3.sh](./scripts/setup_colab_h3.sh) 传到 `/content/`，去掉 Windows 换行符后通过 SSH 执行。
+3. 部署脚本分 5 步，日志实时输出到本机终端：
+
+   | 步骤 | 做什么 |
+   |---|---|
+   | `[1/5]` | `apt` 装 aria2、ffmpeg，下载 cloudflared |
+   | `[2/5]` | 克隆 ComfyUI 和 3 个自定义节点（GGUF、VideoHelperSuite、KJNodes），装 Python 依赖，下载 4 个官方工作流模板 |
+   | `[3/5]` | aria2c 16 线程从 Hugging Face 下载模型（已存在的文件跳过） |
+   | `[4/5]` | 后台启动 ComfyUI，端口 8188 |
+   | `[5/5]` | 启动 cloudflared 临时隧道，最多等 80 秒服务就绪 |
+
+成功时最后两行是：
 
 ```text
 COMFYUI_READY_ON_8188
 https://<随机子域名>.trycloudflare.com
 ```
 
-可选项：`--with-qwen-t2i 1` 另装 Qwen-Image（4 步 Lightning，出首帧和物件图用）；`--mode bf16` 全精度。
-提示账号已有最大数量的会话时，先 `colab status` 看看，停掉不用的。
+失败时的退出码：`1` 申请不到高速 GPU，或服务 80 秒内没起来（会打印 ComfyUI 日志）；`2` 账号的 GPU 会话数已到上限（先 `colab status`，停掉不用的）。
 
-## 3. 映射到本机 8188
+> **注意 trycloudflare 地址是公网可访问的，没有密码。** 拿到地址的人都能用你的 GPU。不要把它贴到公开的地方；
+> 只用 SSH 隧道时，可以在会话里 `pkill -f "cloudflared tunnel"` 关掉它。
+
+## 3. 把服务映射到本机 8188
+
+另开一个终端（WSL），让隧道一直跑着：
 
 ```bash
-bash scripts/keep_ssh_tunnel.sh minimax-h3        # 一直在后台跑，断了自动重连
+bash scripts/keep_ssh_tunnel.sh minimax-h3          # 参数：会话名 [本机端口，默认 8188]
 ```
 
-之后 `http://127.0.0.1:8188` 就是服务。隧道跑在 WSL 里而 Windows 访问不到 `127.0.0.1:8188` 时，用 WSL 的 IP
-（`hostname -I`）或上面的 trycloudflare 地址；项目脚本用环境变量 `COMFY_URL` 指定。
+它在本机监听 `0.0.0.0:8188`，经 `colab ssh --proxy-mode` 转到会话里的 `127.0.0.1:8188`，断线 10 秒后自动重连。
 
-**隧道还有保活作用**：Colab 会话没有 SSH 连着时，十几分钟就会被回收，模型要重新下载。从部署完成到用完，隧道脚本要一直跑着。
+**隧道同时是保活手段。** Colab 会话没有 SSH 连着时，十几分钟就会被回收，模型要重新下载。从部署完成到用完，隧道要一直开着。
 
-## 4. 已装好的超分模型（`--with-upscale 1`）
+Windows 上访问不到 `127.0.0.1:8188` 时（WSL 没有把端口转发给 Windows），改用 WSL 的 IP（在 WSL 里 `hostname -I`）
+或 trycloudflare 地址。项目里的脚本用环境变量 `COMFY_URL` 指定服务地址，例如 `COMFY_URL=http://172.x.x.x:8188`。
 
-| 方法 | 模型 | 特点 | 5 秒片段耗时（A100 80GB） |
-|---|---|---|---|
-| RelayVSR x2（默认推荐） | `relayvsr_x2_lightx2v_int8_convrot` + `relayvsr_flash_vae_x2_fp32` | 专为 H3 输出做的 2 倍视频超分，1 步采样，时间一致性好，保留帧率和音轨 | 约 50 秒 |
-| RealESRGAN | `RealESRGAN_x2plus.pth`、`RealESRGAN_x4plus_anime_6B.pth` | 逐帧放大，二维线稿更锐，较慢 | 约 92 秒 |
+## 4. 验证服务
 
-## 5. 释放
+按顺序做，前一步通过再做下一步：
 
-用完就停，除非用户说要留着：
+```bash
+curl -s http://127.0.0.1:8188/system_stats | head -c 300     # 1. 返回 JSON，里面有 GPU 型号和显存
+python3 <minimax-h3-service-caller 目录>/scripts/h3_client.py status   # 2. GPU 型号、剩余显存、队列
+python3 scripts/run_h3_t2v.py --first-frame test.png \
+  --prompt "a small fox waves its paw, birdsong" --output test.mp4      # 3. 出一条 5 秒测试视频
+```
+
+第 3 步用任意一张 PNG 当首帧；能拿到带声音的 mp4，说明视频模型、文本编码器、VAE 和音频 VAE 都装对了。
+`--mode` 要和部署档位一致（默认 `quant`）。
+
+## 5. 释放（用完就停）
+
+除非用户明确说要留着，任务一完成就释放，并告诉用户服务是否已停止计费：
 
 ```bash
 colab stop -s minimax-h3
 colab status          # 确认没有活动会话
 ```
 
-同时停掉隧道脚本。会话按计算单元持续计费，交付结果时告诉用户服务是否已释放。
+然后停掉本机的 `keep_ssh_tunnel.sh`（Ctrl+C，或结束后台进程）。生成结果要先下载到本机：会话释放后 `/content` 里的东西全部消失。
 
 ## 常见问题
 
-| 现象 | 做法 |
+| 现象 | 原因和做法 |
 |---|---|
-| 申请一直失败 | 高速 GPU 暂时没货，过一会儿再试；不要改成 L4 |
-| 生成到一半连接断开、服务消失 | 会话被回收了（多半是隧道没连着）。重新部署，并保持隧道 |
-| Windows 访问不到 127.0.0.1:8188 | 用 WSL IP 或 trycloudflare 地址 |
-| 脚本在 Colab 上报 `\r` 相关错误 | 脚本是 CRLF 换行；部署脚本已用 `sed` 去掉，手工上传时注意 |
+| 一直申请不到 GPU | 高速 GPU 暂时没货。过一会儿再试，或调大 `--rounds`；不要改成 L4 |
+| 退出码 2，提示会话数上限 | `colab status` 找到旧会话，`colab stop -s <名字>` 后重试 |
+| 生成到一半连接断开、服务消失 | 会话被回收了（多半是隧道没连着）。重新部署，并保持隧道一直运行 |
+| 服务起来了但出错，提示找不到模型 | 下载中断。重新运行部署命令，已下完的文件会跳过 |
+| 生成特别慢，每步几十秒 | 看 ComfyUI 日志里是不是 `full load: False`：确认启动参数带 `--disable-dynamic-vram`，GPU 不是 L4 / T4 |
+| Windows 访问不到 127.0.0.1:8188 | 用 WSL IP 或 trycloudflare 地址，并设 `COMFY_URL` |
+| 手动上传脚本后报 `\r` 相关错误 | 脚本是 Windows 换行。先 `sed -i 's/\r$//' 脚本名` 再运行（`provision_fast_gpu.py` 已自动处理） |
+| 想看服务端日志 | 用 [reference.md](./reference.md) 里的 SSH 命令登进会话，`tail -f /content/comfyui.log` |
 | 模型许可 | MiniMax H3 的社区许可对部署地区有限制，以模型仓库里的 LICENSE 为准，商用前自己确认 |

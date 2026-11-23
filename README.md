@@ -3,7 +3,7 @@
 一套给 Claude Code 用的插件（两个插件、10 个技能），记录了一部 12 集儿童英语启蒙系列片从剧本到发布的完整做法：
 视频模型出剧情镜头，网页动画做教学和互动，配音驱动时间轴，最后合成、加字幕、出封面和文案。
 
-> 状态：早期版本（kids-video-studio 0.2.0）。脚本取自一个真实项目，还没有在全新环境里完整跑通，见“已知限制”和“后续待办”。
+> 状态：早期版本（kids-video-studio 0.3.0，comfyui-h3-cloud 0.1.1）。脚本取自一个真实项目，还没有在全新环境里完整跑通，见“已知限制”和“后续待办”。
 
 ## 制作思路
 
@@ -28,12 +28,16 @@
 | [comfyui-h3-autodl](plugins/comfyui-h3-cloud/skills/comfyui-h3-autodl/SKILL.md) | 在 AutoDL 上用开发者 API 开实例、持久化模型、私有镜像快速启动 |
 | [minimax-h3-service-caller](plugins/comfyui-h3-cloud/skills/minimax-h3-service-caller/SKILL.md) | 调用服务：文生视频、图生视频、分镜批量、1080p 超分 |
 
+两个部署技能的 `SKILL.md` 按“前置条件 → 部署 → 映射端口 → 验证 → 释放”一步步写，每步给出命令、预期输出和失败时怎么办；
+装了哪些模型、放在哪个目录、日志在哪、怎么手动排查，放在同目录的 `reference.md`
+（[Colab](plugins/comfyui-h3-cloud/skills/comfyui-h3-colab/reference.md)、[AutoDL](plugins/comfyui-h3-cloud/skills/comfyui-h3-autodl/reference.md)）。
+
 ### kids-video-studio：儿童视频制作（带项目模板）
 
 | 技能或命令 | 做什么 |
 |---|---|
 | `/kids-video-studio:init-project` | 把项目模板复制到你的项目目录 |
-| [kids-video-pipeline](plugins/kids-video-studio/skills/kids-video-pipeline/SKILL.md) | 一集的完整流程：剧本评审、镜头、配音、H5 动画、合成、检查 |
+| [kids-video-pipeline](plugins/kids-video-studio/skills/kids-video-pipeline/SKILL.md) | 一集的完整流程：剧本评审、镜头、配音、H5 动画、素材审核页（审完才允许合成）、合成、检查 |
 | [h5-3d-skin](plugins/kids-video-studio/skills/h5-3d-skin/SKILL.md) | H5 物件和背景换成 3D 风格图，先查公共素材库，抠图问题排查 |
 | [video-to-animation](plugins/kids-video-studio/skills/video-to-animation/SKILL.md) | 动作词、开关推拉、天气做成逐帧动画（图生视频 → 抠图 → 精灵表），循环或只播一遍 |
 | [h3-voice-cleanup](plugins/kids-video-studio/skills/h3-voice-cleanup/SKILL.md) | 用 Whisper 查出 H3 镜头原声里的人声，在 Colab 上用 Demucs 去掉，只留环境音 |

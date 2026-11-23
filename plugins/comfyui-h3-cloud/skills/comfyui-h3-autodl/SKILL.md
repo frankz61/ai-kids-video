@@ -11,93 +11,213 @@ description: >-
 
 # 在 AutoDL 上部署 ComfyUI + MiniMax H3
 
-部署好之后用 `minimax-h3-service-caller` 调用。海外网络可以用 `comfyui-h3-colab`。脚本路径相对本技能目录。
+部署好之后用 `minimax-h3-service-caller` 调用。海外网络可以用 `comfyui-h3-colab`。
+脚本路径相对本技能目录；目录、模型清单、日志和手动排查见 [reference.md](./reference.md)。
 
-## 思路
+## 思路：第一次慢，以后每次十几秒
 
-模型有几十 GB，每次开机重新下载又慢又费钱。所以把两样东西固化下来：
+模型有 60 多 GB，每次开机重新下载又慢又费钱。所以把两样东西固化下来：
 
-- **模型**放在该地区的持久化共享存储 `/root/autodl-fs/comfyui_models`，实例释放后还在；
-- **环境**（Python、PyTorch、ComfyUI、自定义节点）存成**私有镜像**。
+| 固化什么 | 放在哪 | 释放实例后 |
+|---|---|---|
+| **模型** | 该地区的持久化共享存储 `/root/autodl-fs/comfyui_models` | 还在 |
+| **环境**（Python、PyTorch、ComfyUI、自定义节点） | **私有镜像** | 还在 |
 
-之后每次只需“用私有镜像开一台实例 → 软链模型 → 启动 ComfyUI”，十几秒可用，按小时计费，用完释放。
+```
+第一次（每个地区一次；大部分时间花在下载约 65GB 模型上，快慢取决于地区带宽）
+  基础镜像开实例 → setup_autodl_h3.sh 装环境、下模型到共享存储 → 验证 → 等模型同步完 → 存私有镜像 → 释放
 
-## 前置
+以后每次（十几秒到一两分钟）
+  create --image-uuid <私有镜像> --start-command <软链模型 + 启动 ComfyUI> → SSH 隧道映射 8188 → 干活 → 关机或释放
+```
 
-- AutoDL 账号和开发者 Token。Token 存到 `~/.config/autodl/token`（`chmod 600`），或设环境变量 `AUTODL_TOKEN`，
-  或用 `--token` 传入。**不要写进仓库或技能文件**。
-- 共享存储和私有镜像都按地区隔离：模型放在哪个区，实例就开在哪个区。
+## 0. 前置条件（一次性）
 
-## 1. 硬件选择
+| 要准备的 | 说明 |
+|---|---|
+| AutoDL 账号并充值 | 容器实例 Pro 按小时计费，创建前余额要够 |
+| 开发者 Token | 在 AutoDL 控制台的开发者设置里生成。三种放法，按优先级：`--token` 参数 > 环境变量 `AUTODL_TOKEN` > 文件 `~/.config/autodl/token`。推荐文件，并 `chmod 600`。**不要写进仓库或技能文件** |
+| 本机 Python 3.10+ 和 `ssh` | [autodl_pro_client.py](./scripts/autodl_pro_client.py) 只用标准库，不用装依赖 |
+| 选定一个地区 | 共享存储和私有镜像都**按地区隔离**：模型放在哪个区，以后实例就开在哪个区 |
 
-32 GB 显存是分水岭：带 `--disable-dynamic-vram` 时，约 20 GB 的 UNet 和约 15 GB 的 `nvfp4_awq` 文本编码器可以整个装进显存。
-作者实测（32GB 档，当时约 ¥1.68 / 小时，价格和规格以 `stock` 查询结果为准）：
-
-- MiniMax-H3-Image 4MP 6 步出图：约 4 秒
-- MiniMax H3 1280x736、124 帧、8 步视频加原生音频：约 3 分钟
-
-## 2. 命令（[autodl_pro_client.py](./scripts/autodl_pro_client.py)，只用标准库）
+存 Token（Linux / WSL / macOS）：
 
 ```bash
-python3 scripts/autodl_pro_client.py balance                               # 余额
-python3 scripts/autodl_pro_client.py stock --regions westDC3,beijingDC2    # 各区库存和价格
-python3 scripts/autodl_pro_client.py list                                  # 现有实例、SSH 信息、计费
+mkdir -p ~/.config/autodl && printf '%s' '<你的 Token>' > ~/.config/autodl/token && chmod 600 ~/.config/autodl/token
+python3 scripts/autodl_pro_client.py balance        # 能显示余额就说明 Token 可用
+```
 
-# 按规格从便宜到贵尝试，在指定区创建实例并启动 ComfyUI
+## 1. 硬件和费用
+
+32GB 显存是分水岭：带 `--disable-dynamic-vram` 启动时，约 20GB 的 UNet 和约 15GB 的 `nvfp4_awq` 文本编码器
+可以轮流整个装进显存。所以从最便宜的 32GB 规格开始试。
+
+| 规格 ID（`--specs`） | 说明 |
+|---|---|
+| `v-32g-p` | vGPU 32GB，作者用的档位，当时约 ¥1.68 / 小时 |
+| `v-48g-350w`、`v-48g`、`5090d-p`、`5090-p`、`pro6000-p`、`4090D` | 更贵的备选，默认按这个顺序往后试 |
+
+作者在 32GB 档的实测：MiniMax-H3-Image 4MP 6 步出图约 4 秒；MiniMax H3 1280x736、124 帧、8 步视频加原生音频约 3 分钟。
+价格和库存会变，以 `stock` 和 `create` 打印的结果为准。
+
+**创建实例会花钱。** 创建前先运行 `balance` 和 `stock`，把选中的地区、规格和单价告诉用户，得到同意再创建。
+
+## 2. 命令速查（[autodl_pro_client.py](./scripts/autodl_pro_client.py)）
+
+| 命令 | 作用 |
+|---|---|
+| `balance` | 余额 |
+| `stock [--regions a,b] [--all]` | 各地区空闲卡数 / 总卡数；`--all` 连没空闲的也列出 |
+| `list` | 所有实例：uuid、地区、规格、单价、状态、SSH 命令、root 密码 |
+| `create ...` | 按候选地区和规格依次尝试创建，等到运行且 SSH 可用后打印连接信息（最多等约 3 分钟） |
+| `power-off --uuid U` | 关机（停止 GPU 计费，实例保留） |
+| `power-on --uuid U [--start-command C]` | 带卡开机 |
+| `release --uuid U` | 先关机再彻底释放（不可恢复；共享存储里的模型不受影响） |
+| `save-image --uuid U --image-name N` | 把实例存成私有镜像 |
+
+`create` 的参数：
+
+| 参数 | 默认 | 说明 |
+|---|---|---|
+| `--regions` | `beijingDC2,auto` | 候选地区，逗号分隔；`auto` 表示不限地区（只在没有共享存储依赖时用） |
+| `--specs` | 见上表 | 候选规格，按顺序尝试 |
+| `--image-uuid` | `base-image-l2t43iu6uk` | 默认是作者测试时用的官方基础镜像；以后换成你的私有镜像 uuid。基础镜像 ID 会更新，创建被拒时去控制台查当前的 |
+| `--cuda-from` | `113` | 最低 CUDA 版本要求 |
+| `--name` | `minimax-h3-pro` | 实例名 |
+| `--start-command` | 空 | 开机后自动执行的命令 |
+| `--spec-first` / `--region-first` | `--spec-first` | 先按规格从便宜到贵遍历每个地区（默认），或先固定地区再遍历规格 |
+| `--expand-disk` | `0` | 系统盘扩容 GB |
+
+## 3. 第一次在一个地区部署
+
+### 3.1 用基础镜像开一台实例
+
+```bash
+python3 scripts/autodl_pro_client.py stock --regions westDC3
+python3 -u scripts/autodl_pro_client.py create --regions westDC3 --specs v-32g-p,v-48g
+```
+
+成功后打印 `=== PRO INSTANCE READY ===`，下面有实例 uuid、单价、`SSH Command`、`SSH Host/Port` 和 root 密码。
+记下 uuid。之后随时可以用 `list` 再查。
+
+### 3.2 上传并运行部署脚本
+
+```bash
+scp -P <ssh 端口> scripts/setup_autodl_h3.sh root@<ssh 主机>:/root/
+ssh -p <ssh 端口> root@<ssh 主机>                     # 密码用 create / list 打印的 root 密码，或在控制台配好公钥
+# 以下在实例里执行；用 tmux 或 nohup，SSH 断了也不会中断下载
+sed -i 's/\r$//' /root/setup_autodl_h3.sh
+WITH_H3_IMAGE=1 WITH_UPSCALE=1 bash /root/setup_autodl_h3.sh 2>&1 | tee /root/setup.log
+```
+
+脚本分 6 步（可以重复运行，已完成的部分会跳过）：
+
+| 步骤 | 做什么 |
+|---|---|
+| `[1/6]` | 装 aria2、ffmpeg、git、curl |
+| `[2/6]` | 打开 AutoDL 学术加速（`/etc/network_turbo`），克隆 ComfyUI 和 3 个自定义节点；下载 RealESRGAN（在 GitHub 上） |
+| `[3/6]` | 关掉代理，从腾讯云 PyPI 镜像装 Python 依赖；装完写标记文件 `.deps_installed`，下次跳过 |
+| `[4/6]` | 从魔搭（ModelScope）用 aria2c 断点续传下载模型，约 65 GB（全开时）；见下面“模型放哪里” |
+| `[5/6]` | 在共享存储里生成 `link_models.sh`，然后启动 ComfyUI（没有 GPU 时到这一步就正常退出） |
+| `[6/6]` | 最多等 90 秒服务就绪，打印 `COMFYUI_READY_ON_8188`，并在后台把本地盘上的模型复制到共享存储 |
+
+模型放哪里：
+
+- 共享存储里已经有这个文件 → 直接软链，不下载；
+- 数据盘 `/root/autodl-tmp` 剩余不到 80GB（或设了 `DIRECT_SHARED=1`）→ 直接下到共享存储再软链；
+- 否则先下到本地盘（更快），服务起来后由后台任务复制到共享存储并换成软链。
+
+文本编码器下载的是 `nvfp4_awq` 版（约 15GB，适合 32GB 显存），脚本会建一个名为 `..._int8_convrot` 的软链指向它，
+这样调用端的工作流不用改文件名。
+
+### 3.3 验证
+
+在本机建隧道（见第 5 节），然后：
+
+```bash
+curl -s http://127.0.0.1:8188/system_stats | head -c 300
+python3 <minimax-h3-service-caller 目录>/scripts/h3_client.py status
+```
+
+再用 `minimax-h3-service-caller` 出一张图、一条视频，确认生图、生视频（带声音）、超分都正常。
+
+### 3.4 等模型同步完，再存镜像
+
+**存镜像或释放之前，必须确认后台同步已经结束**，否则共享存储里的模型不全，下次开机会缺文件：
+
+```bash
+tail -n 3 /root/autodl-tmp/sync_to_fs.log      # 最后一行是 “[SYNC] All models cached in ... and symlinked.”
+ls -lh /root/autodl-fs/comfyui_models/*/       # 没有 .tmp 结尾的文件
+```
+
+然后在本机：
+
+```bash
+python3 scripts/autodl_pro_client.py save-image --uuid <实例 uuid> --image-name minimax-h3-comfy
+```
+
+存镜像需要一段时间（镜像约 12GB），在 AutoDL 控制台的镜像列表里看到状态完成后，记下**私有镜像 uuid**（形如 `image-xxxxxxxxxx`）。
+如果 API 提示要先关机，就先 `power-off` 再存。确认镜像可用后，`release` 这台实例。
+
+## 4. 以后每次启动
+
+```bash
+python3 scripts/autodl_pro_client.py balance
+python3 scripts/autodl_pro_client.py stock --regions <你的地区>
 python3 -u scripts/autodl_pro_client.py create \
-  --regions <地区> \
+  --regions <你的地区> \
   --specs v-32g-p,v-48g-350w,v-48g,5090d-p,5090-p \
   --image-uuid <你的私有镜像 uuid> \
-  --cuda-from 113 \
-  --start-command "nohup /root/miniconda3/envs/comfy/bin/python /root/autodl-tmp/ComfyUI/main.py --listen 0.0.0.0 --port 8188 --enable-cors-header --disable-dynamic-vram > /root/autodl-tmp/comfyui.log 2>&1 < /dev/null &"
-
-python3 scripts/autodl_pro_client.py power-off --uuid <实例 uuid>           # 关机
-python3 scripts/autodl_pro_client.py power-on  --uuid <实例 uuid> --start-command "..."
-python3 scripts/autodl_pro_client.py release   --uuid <实例 uuid>           # 彻底释放
-python3 scripts/autodl_pro_client.py save-image --uuid <实例 uuid> --image-name <名字>   # 存成私有镜像
+  --start-command "bash /root/autodl-fs/comfyui_models/link_models.sh && nohup /root/miniconda3/bin/python /root/autodl-tmp/ComfyUI/main.py --listen 0.0.0.0 --port 8188 --enable-cors-header --disable-dynamic-vram > /root/autodl-tmp/comfyui.log 2>&1 < /dev/null &"
 ```
 
-`--start-command` 里的 Python 路径取决于你的镜像把环境装在哪里；用 `setup_autodl_h3.sh` 装的是 `/root/miniconda3/bin/python`。
-创建会花钱：创建前先 `balance` 和 `stock`，把选中的规格和单价告诉用户。
+- `link_models.sh` 把共享存储里的模型软链到 ComfyUI 的 `models/` 下，重复运行无害。镜像里已有软链时也建议保留这一步，
+  防止共享存储里后来新增的模型没链上。
+- Python 路径取决于镜像把环境装在哪里：用 `setup_autodl_h3.sh` 装的是 `/root/miniconda3/bin/python`；
+  如果你另建了 conda 环境（例如 `comfy`），改成 `/root/miniconda3/envs/comfy/bin/python`。
+- 第一次加载模型要从共享存储读几十 GB，第一条任务会比之后慢。
 
-## 3. 第一次在一个新地区部署
+关机后再开机，用 `power-on` 并带同样的 `--start-command`。
 
-用官方基础镜像开一台 32GB 以上的实例，SSH 上去运行 [setup_autodl_h3.sh](./scripts/setup_autodl_h3.sh)：
+## 5. 映射到本机 8188
 
-```bash
-WITH_H3_IMAGE=1 WITH_UPSCALE=1 bash setup_autodl_h3.sh
-```
-
-它会：打开 AutoDL 的学术加速来克隆 GitHub 仓库 → 装 ComfyUI 和自定义节点 → 从魔搭（ModelScope）镜像用 aria2c 断点续传下载模型，
-沉淀到 `/root/autodl-fs/comfyui_models`（本地盘空间不够时直接下到共享存储）→ 生成一键软链脚本 `link_models.sh` →
-启动 ComfyUI，就绪后打印 `COMFYUI_READY_ON_8188`。
-
-确认出图出视频正常后，`save-image` 存成私有镜像，把镜像 uuid 记下来，以后创建实例时用。
-
-## 4. 映射到本机 8188
-
-`list` 会给出实例的 SSH 主机和端口：
+`create` 和 `list` 会打印 SSH 主机和端口。在本机另开一个终端，让下面的循环一直跑着：
 
 ```bash
 while true; do
   ssh -N -L 0.0.0.0:8188:127.0.0.1:8188 -p <ssh 端口> \
-    -o ServerAliveInterval=20 -o ExitOnForwardFailure=yes root@<ssh 主机>
+    -o ServerAliveInterval=20 -o ServerAliveCountMax=3 -o ExitOnForwardFailure=yes \
+    root@<ssh 主机>
   sleep 5
 done
 ```
 
-免密登录需要先在 AutoDL 控制台配好 SSH 公钥。
+要无人值守地重连，需要免密登录：在 AutoDL 控制台配好 SSH 公钥，并加上 `-o BatchMode=yes`。
+AutoDL 没有 Colab 那样的“无连接回收”，隧道只负责转发；断了不影响实例上正在跑的任务。
 
-## 5. 用完
+## 6. 用完：关机还是释放
 
-除非用户说要留着，任务完成就 `power-off`（短期还会再用）或 `release`（不再用），然后 `list` 确认状态，并告诉用户是否已经停止计费。
-关机实例的保留期限和存储计费以 AutoDL 当前规则为准；模型在共享存储里，释放实例不影响。
+除非用户说要留着，任务完成就处理掉，并用 `list` 确认状态，告诉用户是否已经停止 GPU 计费：
+
+| 情况 | 命令 | 结果 |
+|---|---|---|
+| 短期内还会再用 | `power-off --uuid U` | 停止 GPU 计费；实例和数据盘保留（保留期限和存储费用以 AutoDL 当前规则为准） |
+| 不再用 | `release --uuid U` | 实例删除，不可恢复；共享存储里的模型和私有镜像都还在 |
+
+生成结果先下载到本机：释放后实例本地盘（包括 `ComfyUI/output/`）全部清空。
 
 ## 常见问题
 
-| 现象 | 做法 |
+| 现象 | 原因和做法 |
 |---|---|
-| 创建时报没有库存 | `--regions`、`--specs` 多给几个；或者换时间 |
-| 新实例里找不到模型 | 实例和共享存储不在同一个地区；或者没运行 `link_models.sh` |
-| GitHub 克隆很慢 | `source /etc/network_turbo`（脚本已做）；装 Python 包前要取消代理变量 |
-| 下载到一半磁盘满 | 脚本在本地盘不足 80 GB 时会直接下到共享存储；也可以设 `DIRECT_SHARED=1` |
+| 创建时所有候选都被拒 | 没有库存。`--regions`、`--specs` 多给几个，或换个时间；看打印的 `code` 和 `msg` |
+| 创建被拒，提示镜像不存在 | 私有镜像不在这个地区，或基础镜像 ID 已更新 |
+| 实例进入 `starting_failed` / `create_failed` | `create` 会打印快照信息后退出；去控制台看原因，通常是镜像和 CUDA 版本不匹配，调整 `--cuda-from` |
+| 新实例里 ComfyUI 报找不到模型 | 实例和共享存储不在同一地区；或者启动命令里没有运行 `link_models.sh` |
+| `curl 127.0.0.1:8188` 连不上 | 看 `/root/autodl-tmp/comfyui.log`；检查启动命令里的 Python 路径是否存在 |
+| GitHub 克隆很慢或失败 | 脚本已 `source /etc/network_turbo`；手动操作时也要先执行它 |
+| 装 Python 包报代理错误 | 学术加速的代理变量还在：`unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY all_proxy ALL_PROXY` |
+| 下载到一半磁盘满 | 设 `DIRECT_SHARED=1` 重跑，直接下到共享存储；aria2c 会断点续传 |
+| 下次开机缺模型 | 上次存镜像或释放时后台同步还没完成。在有模型的实例上补跑同步，或重跑部署脚本 |
+| 生成很慢 | 看 ComfyUI 日志是否 `full load: True`，确认启动参数带 `--disable-dynamic-vram`、显存至少 32GB |
+| 模型许可 | MiniMax H3 的社区许可对部署地区有限制，以模型仓库里的 LICENSE 为准，商用前自己确认 |

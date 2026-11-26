@@ -1,7 +1,7 @@
 {
   "name": "kids-video-studio",
   "description": "Produce a kids' English video series: reviewed scripts, AI video shots mixed with data-driven H5 animation, TTS-driven timing, 3D-style sprites, covers, titles and descriptions. Includes a project template.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": {
     "name": "frankz61"
   },
